@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">InventoryWidget</string>
+    <string name="tituloInventario">Inventario</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="add_product">Agregar producto</string>
+    <string name="inventory_image">Imagen alusiva al inventario</string>
+
+
+
+</resources>
