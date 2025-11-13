@@ -3,6 +3,7 @@
     <string name="tituloInventario">Inventario</string>
     <string name="logout">Cerrar sesión</string>
     <string name="add_product">Agregar producto</string>
+    <string name="title">Inventory</string>
     <string name="inventory_image">Imagen alusiva al inventario</string>
 
 
