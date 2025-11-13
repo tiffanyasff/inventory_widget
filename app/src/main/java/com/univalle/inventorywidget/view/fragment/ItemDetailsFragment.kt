@@ -63,12 +63,6 @@ class ItemDetailsFragment : Fragment() {
         binding.tvItem.text = "${receivedInventory.name}"
         binding.tvPrice.text = "$ ${receivedInventory.price}"
         binding.tvQuantity.text = "${receivedInventory.quantity}"
-        binding.txtTotal.text = "$ ${
-            inventoryViewModel.totalProducto(
-                receivedInventory.price,
-                receivedInventory.quantity
-            )
-        }"
     }
 
     private fun mostrarDialogoConfirmacion() {
