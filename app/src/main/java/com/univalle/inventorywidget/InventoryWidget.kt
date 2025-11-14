@@ -14,51 +14,52 @@ import kotlinx.coroutines.withContext
 
 class InventoryWidget : AppWidgetProvider() {
 
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
-    ) {
-        for (appWidgetId in appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId)
-        }
-    }
-
-    override fun onEnabled(context: Context) {
-    }
-
-    override fun onDisabled(context: Context) {
-    }
-
     companion object {
+        private const val ACTION_TOGGLE_VISIBILITY = "com.univalle.inventorywidget.TOGGLE_VISIBILITY"
+        private const val PREFS_NAME = "InventoryWidgetPrefs"
+        private const val PREF_VISIBILITY = "visibility_"
+
         fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
             val repository = InventoryRepository(context)
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val isVisible = prefs.getBoolean(PREF_VISIBILITY + appWidgetId, true)
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val inventoryList = repository.getListInventory()
-                    val totalItems = inventoryList.size
-                    var totalQuantity = 0
                     var totalValue = 0.0
 
                     inventoryList.forEach { inventory ->
-                        totalQuantity += inventory.quantity
                         totalValue += (inventory.price * inventory.quantity)
                     }
 
                     withContext(Dispatchers.Main) {
                         val views = RemoteViews(context.packageName, R.layout.inventory_widget)
 
-                        views.setTextViewText(R.id.widget_total_items, totalItems.toString())
-                        views.setTextViewText(R.id.widget_total_quantity, totalQuantity.toString())
-                        views.setTextViewText(
-                            R.id.widget_total_value,
-                            String.format("$%.2f", totalValue)
-                        )
+                        if (isVisible) {
+                            views.setTextViewText(
+                                R.id.widget_total_value,
+                                String.format("$ %,.2f", totalValue)
+                            )
+                            views.setImageViewResource(
+                                R.id.widget_visibility_button,
+                                android.R.drawable.ic_menu_view
+                            )
+                        } else {
+                            views.setTextViewText(
+                                R.id.widget_total_value,
+                                "$ ••••••"
+                            )
+                            // Cambiar ícono a "ojo cerrado/tachado"
+                            views.setImageViewResource(
+                                R.id.widget_visibility_button,
+                                android.R.drawable.ic_menu_close_clear_cancel
+                            )
+                        }
 
                         val intent = Intent(context, MainActivity::class.java)
                         val pendingIntent = PendingIntent.getActivity(
@@ -69,17 +70,17 @@ class InventoryWidget : AppWidgetProvider() {
                         )
                         views.setOnClickPendingIntent(R.id.widget_container, pendingIntent)
 
-                        val updateIntent = Intent(context, InventoryWidget::class.java).apply {
-                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
+                        val toggleIntent = Intent(context, InventoryWidget::class.java).apply {
+                            action = ACTION_TOGGLE_VISIBILITY
+                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                         }
-                        val updatePendingIntent = PendingIntent.getBroadcast(
+                        val togglePendingIntent = PendingIntent.getBroadcast(
                             context,
-                            0,
-                            updateIntent,
+                            appWidgetId,
+                            toggleIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                         )
-                        views.setOnClickPendingIntent(R.id.widget_refresh_button, updatePendingIntent)
+                        views.setOnClickPendingIntent(R.id.widget_visibility_button, togglePendingIntent)
 
                         appWidgetManager.updateAppWidget(appWidgetId, views)
                     }
@@ -87,13 +88,58 @@ class InventoryWidget : AppWidgetProvider() {
                     e.printStackTrace()
                     withContext(Dispatchers.Main) {
                         val views = RemoteViews(context.packageName, R.layout.inventory_widget)
-                        views.setTextViewText(R.id.widget_total_items, "0")
-                        views.setTextViewText(R.id.widget_total_quantity, "0")
-                        views.setTextViewText(R.id.widget_total_value, "$0.00")
+                        views.setTextViewText(R.id.widget_total_value, "$ 0,00")
                         appWidgetManager.updateAppWidget(appWidgetId, views)
                     }
                 }
             }
         }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        for (appWidgetId in appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId)
+        }
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+
+        if (intent.action == ACTION_TOGGLE_VISIBILITY) {
+            val appWidgetId = intent.getIntExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID
+            )
+
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                val currentVisibility = prefs.getBoolean(PREF_VISIBILITY + appWidgetId, true)
+                prefs.edit().putBoolean(PREF_VISIBILITY + appWidgetId, !currentVisibility).apply()
+
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                updateAppWidget(context, appWidgetManager, appWidgetId)
+            }
+        }
+    }
+
+    override fun onEnabled(context: Context) {
+    }
+
+    override fun onDisabled(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+    }
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        for (appWidgetId in appWidgetIds) {
+            editor.remove(PREF_VISIBILITY + appWidgetId)
+        }
+        editor.apply()
     }
 }
