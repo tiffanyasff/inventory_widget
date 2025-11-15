@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="150dp"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
-    android:padding="19dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,24 +15,27 @@
         android:layout_marginBottom="6dp">
 
         <ImageView
-            android:layout_width="52dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="40dp"
-            android:minWidth="44dp"
-            android:src="@android:drawable/ic_menu_agenda"
-            android:contentDescription="Inventory Icon"
-            android:layout_marginEnd="30dp"/>
+            android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/inventory"
+        android:contentDescription="Inventory Icon"
+        android:scaleType="fitCenter"
+        android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"/>
 
         <TextView
             android:layout_width="0dp"
+            android:layout_marginBottom="18dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="19dp"
             android:layout_weight="1"
             android:text="¿Cuánto tengo de inventario?"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textColor="#FFFFFF"
             android:textStyle="normal"/>
 
         <ImageButton
+            android:layout_marginBottom="18dp"
             android:id="@+id/widget_visibility_button"
             android:layout_width="32dp"
             android:layout_height="10dp"
@@ -42,6 +45,7 @@
     </LinearLayout>
 
     <TextView
+        android:layout_marginTop="-45dp"
         android:id="@+id/widget_total_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,7 +54,7 @@
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:layout_gravity="end"
-        android:layout_marginBottom="16dp"/>
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,6 +63,7 @@
         android:gravity="center_vertical">
 
         <TextView
+            android:layout_marginTop="2.5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -67,7 +72,9 @@
             android:textStyle="bold"
             android:textColor="#e7522e"/>
 
+
         <TextView
+            android:layout_marginTop="2.5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gestionar Inventario"
