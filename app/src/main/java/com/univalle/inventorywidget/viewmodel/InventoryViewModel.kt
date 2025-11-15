@@ -91,8 +91,7 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun totalProducto(price: Int, quantity: Int): Double {
-        val total = price * quantity
-        return total.toDouble()
+        return (price * quantity).toDouble()
     }
 }
 

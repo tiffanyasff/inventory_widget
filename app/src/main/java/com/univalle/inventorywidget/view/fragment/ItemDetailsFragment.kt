@@ -11,6 +11,8 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentItemDetailsBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import androidx.appcompat.app.AlertDialog
+
 
 class ItemDetailsFragment : Fragment() {
     private lateinit var binding: FragmentItemDetailsBinding
@@ -28,13 +30,22 @@ class ItemDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configurarToolbar()
         dataInventory()
         controladores()
     }
 
+    private fun configurarToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            // Volver al Home
+            findNavController().popBackStack()
+        }
+    }
+
     private fun controladores() {
         binding.btnDelete.setOnClickListener {
-            deleteInventory()
+            //deleteInventory()
+            mostrarDialogoConfirmacion()
         }
 
         binding.fbEdit.setOnClickListener {
@@ -43,6 +54,8 @@ class ItemDetailsFragment : Fragment() {
             findNavController().navigate(R.id.action_itemDetailsFragment_to_itemEditFragment, bundle)
         }
     }
+
+
 
     private fun dataInventory() {
         val receivedBundle = arguments
@@ -56,6 +69,19 @@ class ItemDetailsFragment : Fragment() {
                 receivedInventory.quantity
             )
         }"
+    }
+
+    private fun mostrarDialogoConfirmacion() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar producto")
+            .setMessage("¿Deseas eliminar este producto del inventario?")
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("Si") { _, _ ->
+                deleteInventory()
+            }
+            .show()
     }
 
     private fun deleteInventory(){
