@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.univalle.inventorywidget"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.univalle.inventorywidget"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -40,9 +40,16 @@ android {
         compose = false
         viewBinding = true
         dataBinding = true
-        // Si NO usarás Jetpack Compose, quita esta línea:
-        // compose = true
     }
+}
+
+//
+// ✅ BLOQUE AÑADIDO PARA ROOM Y KSP
+//
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.generateKotlin", "true")
 }
 
 dependencies {
@@ -63,12 +70,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
 
     // Activity y Fragment
-    // Activity y Fragment - ACTUALIZADO
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.fragment:fragment-ktx:1.8.5")
 
     // RecyclerView y CardView
-    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
 
     // Corrutinas
@@ -86,7 +92,7 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // animaciones
+    // Animaciones y otros
     implementation("com.getbase:floatingactionbutton:1.10.1")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("com.airbnb.android:lottie:6.0.0")

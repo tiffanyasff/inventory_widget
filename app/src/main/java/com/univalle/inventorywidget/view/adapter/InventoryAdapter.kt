@@ -1,50 +1,34 @@
 package com.univalle.inventorywidget.view.adapter
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import com.univalle.inventorywidget.R
+import com.univalle.inventorywidget.data.Product
 import com.univalle.inventorywidget.databinding.ItemInventoryBinding
-import com.univalle.inventorywidget.model.Inventory
-import java.text.NumberFormat
-import java.util.*
 
 class InventoryAdapter(
-    private val listInventory: List<Inventory>,
-    private val navController: NavController
+    private val listInventory: List<Product>,
+    private val onClick: (Product) -> Unit
 ) : RecyclerView.Adapter<InventoryAdapter.InventoryViewHolder>() {
 
     inner class InventoryViewHolder(val binding: ItemInventoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(inventory: Inventory) {
-            binding.tvName.text = inventory.name
-            binding.tvId.text = "ID: ${inventory.id}"
+        fun bind(product: Product) {
+            binding.tvName.text = product.name
+            binding.tvPrice.text = "$ ${product.price}"
+            binding.tvId.text = "ID: ${product.id}"
 
-
-            // 🔹 Formato de moneda
-            val formatoMoneda = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
-            val precioFormateado = formatoMoneda.format(inventory.price)
-            binding.tvPrice.text = precioFormateado
-
-            // 🔹 Navegación al detalle
             binding.cvInventory.setOnClickListener {
-                val bundle = Bundle().apply {
-                    putSerializable("clave", inventory)
-                }
-                navController.navigate(
-                    R.id.action_homeInventoryFragment_to_itemDetailsFragment,
-                    bundle
-                )
+                onClick(product)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryViewHolder {
-        val binding =
-            ItemInventoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemInventoryBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return InventoryViewHolder(binding)
     }
 
@@ -54,4 +38,3 @@ class InventoryAdapter(
 
     override fun getItemCount(): Int = listInventory.size
 }
-

@@ -1,25 +1,33 @@
 package com.univalle.inventorywidget.data
 
-
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.univalle.inventorywidget.model.Inventory
-import com.univalle.inventorywidget.utils.Constants.NAME_BD
 
-@Database(entities = [Inventory::class], version = 1)
+@Database(entities = [Product::class], version = 2, exportSchema = false)
 abstract class InventoryDB : RoomDatabase() {
 
     abstract fun inventoryDao(): InventoryDao
 
-    companion object{
+    companion object {
+        @Volatile
+        private var INSTANCE: InventoryDB? = null
+
         fun getDatabase(context: Context): InventoryDB {
-            return Room.databaseBuilder(
-                context.applicationContext,
-                InventoryDB::class.java,
-                NAME_BD
-            ).build()
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    InventoryDB::class.java,
+                    "inventory_db"
+                )
+                    // Si quieres logs durante desarrollo, puedes activar:
+                    // .fallbackToDestructiveMigration()  // ⚠ destruye DB al cambiar versión
+                    .build()
+
+                INSTANCE = instance
+                instance
+            }
         }
     }
 }
