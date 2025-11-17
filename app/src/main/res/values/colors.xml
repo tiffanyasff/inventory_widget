@@ -9,4 +9,6 @@
     <color name="backgroundColorBlack">#CC000000</color>
     <color name="backgroundColorOrange">#FF9800</color>
     <color name="backgroundColorGray">#424242</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="primaryButton">#4CAF50</color>
 </resources>
