@@ -12,6 +12,7 @@ import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
 class ItemEditFragment : Fragment() {
+
     private lateinit var binding: FragmentItemEditBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
     private lateinit var receivedInventory: Inventory
@@ -19,7 +20,7 @@ class ItemEditFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentItemEditBinding.inflate(inflater)
         binding.lifecycleOwner = this
         return binding.root
@@ -27,8 +28,15 @@ class ItemEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configurarToolbar()
         dataInventory()
         controladores()
+    }
+
+    private fun configurarToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun controladores() {
@@ -39,7 +47,8 @@ class ItemEditFragment : Fragment() {
 
     private fun dataInventory() {
         val receivedBundle = arguments
-        receivedInventory = receivedBundle?.getSerializable("dataInventory") as Inventory
+        receivedInventory =
+            receivedBundle?.getSerializable("dataInventory") as Inventory
 
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
@@ -52,10 +61,7 @@ class ItemEditFragment : Fragment() {
         val quantity = binding.etQuantity.text.toString().toInt()
 
         val inventoryUpdated = Inventory(
-            receivedInventory.id,
-            name,
-            price,
-            quantity
+            receivedInventory.id, name, price, quantity
         )
 
         inventoryViewModel.updateInventory(inventoryUpdated)
