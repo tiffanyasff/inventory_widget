@@ -13,6 +13,7 @@ import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
 class ItemEditFragment : Fragment() {
+
     private lateinit var binding: FragmentItemEditBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
     private lateinit var receivedInventory: Inventory
@@ -20,41 +21,51 @@ class ItemEditFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentItemEditBinding.inflate(inflater)
-        binding.lifecycleOwner = this
+    ): View {
+        binding = FragmentItemEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataInventory()
-        controladores()
 
+        loadData()
+        setupEvents()
     }
 
-    private fun controladores(){
+    private fun setupEvents() {
+
+        binding.btnBackEdit.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         binding.btnEdit.setOnClickListener {
             updateInventory()
         }
     }
 
-    private fun dataInventory(){
-        val receivedBundle = arguments
-        receivedInventory = receivedBundle?.getSerializable("dataInventory") as Inventory
+    private fun loadData() {
+        val bundle = arguments
+        receivedInventory = bundle?.getSerializable("dataInventory") as Inventory
+
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
         binding.etQuantity.setText(receivedInventory.quantity.toString())
-
     }
 
-    private fun updateInventory(){
+    private fun updateInventory() {
         val name = binding.etName.text.toString()
         val price = binding.etPrice.text.toString().toInt()
         val quantity = binding.etQuantity.text.toString().toInt()
-        val inventory = Inventory(receivedInventory.id, name,price,quantity)
-        inventoryViewModel.updateInventory(inventory)
-        findNavController().navigate(R.id.action_itemEditFragment_to_homeInventoryFragment)
 
+        val updated = Inventory(
+            id = receivedInventory.id,
+            name = name,
+            price = price,
+            quantity = quantity
+        )
+
+        inventoryViewModel.updateInventory(updated)
+        findNavController().navigate(R.id.action_itemEditFragment_to_homeInventoryFragment)
     }
 }
