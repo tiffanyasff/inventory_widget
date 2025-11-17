@@ -6,5 +6,12 @@
     <color name="backgroundColor">#A7AED4</color>
     <color name="backgroundColorItem">#e7e0eb</color>
     <color name="backgroudColorBtn">#009688</color>
+
+    <!-- Color que estaba en HEAD -->
     <color name="gray">#BDBDBD</color>
+
+    <!-- Colores nuevos de develop -->
+    <color name="backgroundColorBlack">#CC000000</color>
+    <color name="backgroundColorOrange">#FF9800</color>
+    <color name="backgroundColorGray">#424242</color>
 </resources>

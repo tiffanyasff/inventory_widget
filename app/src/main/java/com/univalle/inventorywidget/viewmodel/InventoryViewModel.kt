@@ -42,4 +42,9 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             onResult(product)
         }
     }
+
+    // ⭐ Agregado desde develop (criterio del equipo)
+    fun totalProducto(price: Int, quantity: Int): Double {
+        return (price * quantity).toDouble()
+    }
 }

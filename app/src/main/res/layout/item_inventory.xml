@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:padding="12dp">
 
-            <!-- 🔹 Nombre del producto -->
             <TextView
                 android:id="@+id/tvName"
                 android:layout_width="0dp"
@@ -37,7 +36,6 @@
                 app:layout_constraintWidth_percent="0.7"
                 tools:text="Laptop Lenovo"/>
 
-            <!-- 🔹 Precio -->
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
@@ -52,7 +50,6 @@
                 tools:text="$ 350.000,00" />
 
 
-            <!-- 🔹 ID del producto -->
             <TextView
                 android:id="@+id/tvId"
                 android:layout_width="wrap_content"
