@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentItemEditBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
 class ItemEditFragment : Fragment() {
-
     private lateinit var binding: FragmentItemEditBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
     private lateinit var receivedInventory: Inventory
@@ -21,32 +19,27 @@ class ItemEditFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentItemEditBinding.inflate(inflater, container, false)
+    ): View? {
+        binding = FragmentItemEditBinding.inflate(inflater)
+        binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        loadData()
-        setupEvents()
+        dataInventory()
+        controladores()
     }
 
-    private fun setupEvents() {
-
-        binding.btnBackEdit.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
+    private fun controladores() {
         binding.btnEdit.setOnClickListener {
             updateInventory()
         }
     }
 
-    private fun loadData() {
-        val bundle = arguments
-        receivedInventory = bundle?.getSerializable("dataInventory") as Inventory
+    private fun dataInventory() {
+        val receivedBundle = arguments
+        receivedInventory = receivedBundle?.getSerializable("dataInventory") as Inventory
 
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
@@ -58,14 +51,14 @@ class ItemEditFragment : Fragment() {
         val price = binding.etPrice.text.toString().toInt()
         val quantity = binding.etQuantity.text.toString().toInt()
 
-        val updated = Inventory(
-            id = receivedInventory.id,
-            name = name,
-            price = price,
-            quantity = quantity
+        val inventoryUpdated = Inventory(
+            receivedInventory.id,
+            name,
+            price,
+            quantity
         )
 
-        inventoryViewModel.updateInventory(updated)
-        findNavController().navigate(R.id.action_itemEditFragment_to_homeInventoryFragment)
+        inventoryViewModel.updateInventory(inventoryUpdated)
+        findNavController().popBackStack()
     }
 }
