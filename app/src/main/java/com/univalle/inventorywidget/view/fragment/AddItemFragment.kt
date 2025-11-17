@@ -1,7 +1,6 @@
 package com.univalle.inventorywidget.view.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ class AddItemFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAddItemBinding.inflate(inflater)
         binding.lifecycleOwner = this
         return binding.root
@@ -31,60 +30,60 @@ class AddItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        controladores()
-        observerViewModel()
 
-
+        observarProductosAPI()
+        validarCampos()
+        configurarBotonGuardar()
     }
 
-    private fun controladores() {
-        validarDatos()
-        binding.btnSaveInventory.setOnClickListener {
-            saveInvetory()
-        }
-    }
+    /**
+     * CRITERIO 2: Mostrar imagen + título del producto traído de la API
+     */
+    private fun observarProductosAPI() {
+        inventoryViewModel.getProducts()
 
-    private fun saveInvetory(){
-        val name = binding.etName.text.toString()
-        val price = binding.etPrice.text.toString().toInt()
-        val quantity = binding.etQuantity.text.toString().toInt()
-        val inventory = Inventory(name = name, price = price, quantity = quantity)
-        inventoryViewModel.saveInventory(inventory)
-        Log.d("test",inventory.toString())
-        Toast.makeText(context,"Artículo guardado !!", Toast.LENGTH_SHORT).show()
-        findNavController().popBackStack()
+        inventoryViewModel.listProducts.observe(viewLifecycleOwner) { lista ->
+            if (lista.isNotEmpty()) {
+                val product = lista[2]   // Elegimos el producto 3 (como en develop)
+                Glide.with(requireContext())
+                    .load(product.image)
+                    .into(binding.ivImagenApi)
 
-    }
-
-    private fun validarDatos() {
-        val listEditText = listOf(binding.etName, binding.etPrice, binding.etQuantity)
-
-        for (editText in listEditText) {
-            editText.addTextChangedListener {
-                val isListFull = listEditText.all{
-                    it.text.isNotEmpty() // si toda la lista no está vacía
-                }
-                binding.btnSaveInventory.isEnabled = isListFull
+                binding.tvTitleProduct.text = product.title
             }
         }
     }
 
+    /**
+     * Validamos que los campos no estén vacíos para habilitar el botón
+     */
+    private fun validarCampos() {
+        val campos = listOf(binding.etName, binding.etPrice, binding.etQuantity)
 
-
-    private fun observerViewModel(){
-        observerListProduct()
-    }
-
-    private fun observerListProduct() {
-
-        inventoryViewModel.getProducts()
-        inventoryViewModel.listProducts.observe(viewLifecycleOwner){ lista ->
-
-            val product = lista[2]
-            Glide.with(binding.root.context).load(product.image).into(binding.ivImagenApi)
-            binding.tvTitleProduct.text = product.title
+        for (edit in campos) {
+            edit.addTextChangedListener {
+                val completos = campos.all { it.text.isNotEmpty() }
+                binding.btnAdd.isEnabled = completos
+            }
         }
     }
 
+    /**
+     * Guarda el inventario (Room)
+     */
+    private fun configurarBotonGuardar() {
+        binding.btnAdd.setOnClickListener {
+            val name = binding.etName.text.toString()
+            val price = binding.etPrice.text.toString().toInt()
+            val quantity = binding.etQuantity.text.toString().toInt()
 
+            val inventory = Inventory(name = name, price = price, quantity = quantity)
+
+            inventoryViewModel.saveInventory(inventory)
+
+            Toast.makeText(requireContext(), "Artículo guardado", Toast.LENGTH_SHORT).show()
+
+            findNavController().popBackStack()
+        }
+    }
 }
