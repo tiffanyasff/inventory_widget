@@ -21,13 +21,14 @@ class ItemEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentItemEditBinding.inflate(inflater)
+        binding = FragmentItemEditBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         configurarToolbar()
         dataInventory()
         controladores()
@@ -50,6 +51,10 @@ class ItemEditFragment : Fragment() {
         receivedInventory =
             receivedBundle?.getSerializable("dataInventory") as Inventory
 
+        // CRITERIO 2 – mostrar Id sin permitir edición
+        binding.tvId.text = "Id: ${receivedInventory.id}"
+
+        // Datos editables
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
         binding.etQuantity.setText(receivedInventory.quantity.toString())
@@ -61,7 +66,10 @@ class ItemEditFragment : Fragment() {
         val quantity = binding.etQuantity.text.toString().toInt()
 
         val inventoryUpdated = Inventory(
-            receivedInventory.id, name, price, quantity
+            receivedInventory.id,
+            name,
+            price,
+            quantity
         )
 
         inventoryViewModel.updateInventory(inventoryUpdated)
