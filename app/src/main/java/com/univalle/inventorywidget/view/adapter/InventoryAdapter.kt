@@ -23,16 +23,14 @@ class InventoryAdapter(
             binding.tvName.text = inventory.name
             binding.tvId.text = "ID: ${inventory.id}"
 
-
-            // 🔹 Formato de moneda
+            // 🔹 Formato dinero
             val formatoMoneda = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
-            val precioFormateado = formatoMoneda.format(inventory.price)
-            binding.tvPrice.text = precioFormateado
+            binding.tvPrice.text = formatoMoneda.format(inventory.price)
 
             // 🔹 Navegación al detalle
             binding.cvInventory.setOnClickListener {
                 val bundle = Bundle().apply {
-                    putSerializable("clave", inventory)
+                    putSerializable("dataInventory", inventory)  // ✔ CLAVE CORREGIDA
                 }
                 navController.navigate(
                     R.id.action_homeInventoryFragment_to_itemDetailsFragment,
@@ -43,8 +41,11 @@ class InventoryAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryViewHolder {
-        val binding =
-            ItemInventoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemInventoryBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return InventoryViewHolder(binding)
     }
 
@@ -54,4 +55,3 @@ class InventoryAdapter(
 
     override fun getItemCount(): Int = listInventory.size
 }
-
