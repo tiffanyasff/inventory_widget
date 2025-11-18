@@ -2,6 +2,7 @@ package com.univalle.inventorywidget.view.fragment
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +35,7 @@ class ItemEditFragment : Fragment() {
         configurarToolbar()
         dataInventory()
         controladores()
-        validarCamposParaBoton()   // 👈 Criterio 5 (versión ultra robusta)
+        validarCamposParaBoton()
     }
 
     private fun configurarToolbar() {
@@ -59,9 +60,12 @@ class ItemEditFragment : Fragment() {
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
         binding.etQuantity.setText(receivedInventory.quantity.toString())
+
+        // 🔥 CRITERIO 6: máximo 40 caracteres en el nombre
+        binding.etName.filters = arrayOf(InputFilter.LengthFilter(40))
     }
 
-    // 👇 Función ULTRA ROBUSTA: limpia TODO tipo de espacio invisible
+    // Función ultra robusta para limpiar caracteres invisibles
     private fun limpiarTexto(input: String): String {
         return input.replace(
             "[\\u0020\\u00A0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000\\u200B\\u200C\\u200D\\u2060\\uFEFF]"
@@ -69,7 +73,6 @@ class ItemEditFragment : Fragment() {
         )
     }
 
-    // 👇 Criterio 5 robusto: deshabilitar botón si cualquier campo está vacío real
     private fun validarCamposParaBoton() {
 
         val watcher = object : TextWatcher {
@@ -92,7 +95,6 @@ class ItemEditFragment : Fragment() {
         binding.etPrice.addTextChangedListener(watcher)
         binding.etQuantity.addTextChangedListener(watcher)
 
-        // Validación inicial (limpiando caracteres invisibles)
         val nombreInit = limpiarTexto(binding.etName.text.toString())
         val precioInit = limpiarTexto(binding.etPrice.text.toString())
         val cantidadInit = limpiarTexto(binding.etQuantity.text.toString())
