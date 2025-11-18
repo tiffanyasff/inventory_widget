@@ -61,11 +61,14 @@ class ItemEditFragment : Fragment() {
         binding.etPrice.setText(receivedInventory.price.toString())
         binding.etQuantity.setText(receivedInventory.quantity.toString())
 
-        // 🔥 CRITERIO 6: máximo 40 caracteres en el nombre
+        // 🔥 CRITERIO 6: máximo 40 caracteres (Nombre)
         binding.etName.filters = arrayOf(InputFilter.LengthFilter(40))
+
+        // 🔥 CRITERIO 7: máximo 20 dígitos (Precio)
+        binding.etPrice.filters = arrayOf(InputFilter.LengthFilter(20))
     }
 
-    // Función ultra robusta para limpiar caracteres invisibles
+    // Función ULTRA ROBUSTA: limpia caracteres invisibles
     private fun limpiarTexto(input: String): String {
         return input.replace(
             "[\\u0020\\u00A0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000\\u200B\\u200C\\u200D\\u2060\\uFEFF]"
