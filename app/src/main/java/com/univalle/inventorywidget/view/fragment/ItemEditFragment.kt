@@ -1,6 +1,8 @@
 package com.univalle.inventorywidget.view.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +34,7 @@ class ItemEditFragment : Fragment() {
         configurarToolbar()
         dataInventory()
         controladores()
+        validarCamposParaBoton()   // 👈 Criterio 5 (versión ultra robusta)
     }
 
     private fun configurarToolbar() {
@@ -51,13 +54,51 @@ class ItemEditFragment : Fragment() {
         receivedInventory =
             receivedBundle?.getSerializable("dataInventory") as Inventory
 
-        // CRITERIO 2 – mostrar Id sin permitir edición
         binding.tvId.text = "Id: ${receivedInventory.id}"
 
-        // Datos editables
         binding.etName.setText(receivedInventory.name)
         binding.etPrice.setText(receivedInventory.price.toString())
         binding.etQuantity.setText(receivedInventory.quantity.toString())
+    }
+
+    // 👇 Función ULTRA ROBUSTA: limpia TODO tipo de espacio invisible
+    private fun limpiarTexto(input: String): String {
+        return input.replace(
+            "[\\u0020\\u00A0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000\\u200B\\u200C\\u200D\\u2060\\uFEFF]"
+                .toRegex(), ""
+        )
+    }
+
+    // 👇 Criterio 5 robusto: deshabilitar botón si cualquier campo está vacío real
+    private fun validarCamposParaBoton() {
+
+        val watcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                val nombre = limpiarTexto(binding.etName.text.toString())
+                val precio = limpiarTexto(binding.etPrice.text.toString())
+                val cantidad = limpiarTexto(binding.etQuantity.text.toString())
+
+                binding.btnEdit.isEnabled =
+                    nombre.isNotBlank() && precio.isNotBlank() && cantidad.isNotBlank()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        binding.etName.addTextChangedListener(watcher)
+        binding.etPrice.addTextChangedListener(watcher)
+        binding.etQuantity.addTextChangedListener(watcher)
+
+        // Validación inicial (limpiando caracteres invisibles)
+        val nombreInit = limpiarTexto(binding.etName.text.toString())
+        val precioInit = limpiarTexto(binding.etPrice.text.toString())
+        val cantidadInit = limpiarTexto(binding.etQuantity.text.toString())
+
+        binding.btnEdit.isEnabled =
+            nombreInit.isNotBlank() && precioInit.isNotBlank() && cantidadInit.isNotBlank()
     }
 
     private fun updateInventory() {
