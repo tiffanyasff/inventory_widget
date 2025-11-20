@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.InventoryWidget" parent="Theme.AppCompat.Light.NoActionBar" />
+    <!-- Tema principal de la aplicación SIN ACTION BAR -->
+    <style name="Theme.InventoryWidget" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- Desactivar Action Bar nativo -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Usamos colores que SÍ existen en tu colors.xml -->
+        <item name="colorPrimary">@color/backgroundColorGray</item>
+        <item name="colorPrimaryVariant">@color/backgroundColorGray</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/primaryButton</item>
+        <item name="colorSecondaryVariant">@color/primaryButton</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Barra de estado transparente -->
+        <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
+
+    </style>
 
 </resources>

@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.biometric)
     val navVersion = "2.8.3"
 
     // Core Android
