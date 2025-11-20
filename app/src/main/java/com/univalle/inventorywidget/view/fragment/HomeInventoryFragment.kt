@@ -16,6 +16,7 @@ import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 import androidx.activity.OnBackPressedCallback
 
 class HomeInventoryFragment : Fragment() {
+
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
@@ -27,50 +28,46 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Verificar sesión
+        // Validar sesión
         val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+
         if (!isLoggedIn) {
             findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
             return
         }
 
         configurarToolbar()
-        configurarRecyclerView()
-        observadoresViewModel()
+        configurarEventos()
+        observarViewModel()
         configurarBotonAtras()
     }
 
     override fun onResume() {
         super.onResume()
-        // 🔥 Refrescar datos cada vez que se vuelve a esta pantalla
         inventoryViewModel.getListInventory()
     }
 
     private fun configurarToolbar() {
-        binding.ivLogout.setOnClickListener {
-            val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
-            sharedPref.edit().clear().apply()
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
-        }
+        // Toolbar sin menú por ahora
     }
 
-    private fun configurarRecyclerView() {
-        binding.fabAgregar.setOnClickListener {
+    private fun configurarEventos() {
+        binding.fabAdd.setOnClickListener {
             findNavController().navigate(R.id.action_homeInventoryFragment_to_addItemFragment)
         }
     }
 
-    private fun observadoresViewModel() {
-        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { list ->
-            binding.recyclerview.apply {
+    private fun observarViewModel() {
+        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
+            binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = InventoryAdapter(list, findNavController())
+                adapter = InventoryAdapter(lista, findNavController())
             }
         }
 
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
-            binding.progress.isVisible = status
+            binding.progressBarHome.isVisible = status
         }
     }
 
@@ -80,7 +77,6 @@ class HomeInventoryFragment : Fragment() {
                 requireActivity().moveTaskToBack(true)
             }
         }
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 }

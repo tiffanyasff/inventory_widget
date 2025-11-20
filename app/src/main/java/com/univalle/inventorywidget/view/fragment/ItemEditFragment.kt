@@ -3,130 +3,96 @@ package com.univalle.inventorywidget.view.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentItemEditBinding
 import com.univalle.inventorywidget.model.Inventory
-import com.univalle.inventorywidget.repository.InventoryRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
 class ItemEditFragment : Fragment() {
 
     private lateinit var binding: FragmentItemEditBinding
-    private lateinit var repository: InventoryRepository
-    private var currentItem: Inventory? = null
+    private val viewModel: InventoryViewModel by viewModels()
+    private lateinit var receivedInventory: Inventory
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentItemEditBinding.inflate(inflater, container, false)
-        repository = InventoryRepository(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recibir producto desde argumentos
-        currentItem = arguments?.getSerializable("item") as? Inventory
-
-        currentItem?.let { item ->
-            binding.tvId.text = "Id: ${item.id}"
-            binding.etName.setText(item.name)
-            binding.etPrice.setText(item.price.toString())
-            binding.etQuantity.setText(item.quantity.toString())
-        }
-
-        setupToolbar()
-        setupValidations()
+        configurarToolbar()
+        recibirDatos()
+        configurarValidaciones()
 
         binding.btnEdit.setOnClickListener {
-            saveChanges()
+            actualizarProducto()
         }
     }
 
-    private fun setupToolbar() {
+    private fun configurarToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
     }
 
-    /** CONFIGURA TODAS LAS VALIDACIONES */
-    private fun setupValidations() {
-        binding.btnEdit.isEnabled = false
+    private fun recibirDatos() {
+        val bundle = arguments
+        receivedInventory = bundle?.getSerializable("dataInventory") as Inventory
 
-        binding.etName.addTextChangedListener(fieldWatcher)
-        binding.etPrice.addTextChangedListener(fieldWatcher)
-        binding.etQuantity.addTextChangedListener(fieldWatcher)
+        binding.tvId.text = "Id: ${receivedInventory.id}"
+        binding.etName.setText(receivedInventory.name)
+        binding.etPrice.setText(receivedInventory.price.toString())
+        binding.etQuantity.setText(receivedInventory.quantity.toString())
     }
 
-    /** TextWatcher general para todos los campos */
-    private val fieldWatcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-            validateFields()
+    private fun configurarValidaciones() {
+        val watcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                validarCampos()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        binding.etName.addTextChangedListener(watcher)
+        binding.etPrice.addTextChangedListener(watcher)
+        binding.etQuantity.addTextChangedListener(watcher)
     }
 
-    /** VERIFICA TODAS LAS VALIDACIONES */
-    private fun validateFields() {
-        val name = binding.etName.text.toString()
-        val price = binding.etPrice.text.toString()
-        val qty = binding.etQuantity.text.toString()
+    private fun validarCampos() {
+        val name = binding.etName.text.toString().trim()
+        val price = binding.etPrice.text.toString().trim()
+        val quantity = binding.etQuantity.text.toString().trim()
 
-        var isValid = true
+        val camposValidos = name.isNotEmpty() && price.isNotEmpty() && quantity.isNotEmpty()
 
-        // VALIDACIÓN 1 → Nombre (máx 40 chars)
-        if (name.length > 40) {
-            binding.etName.error = "Máximo 40 caracteres"
-            isValid = false
-        }
-
-        // VALIDACIÓN 2 → Precio (solo números, máx 20 dígitos)
-        if (price.isNotEmpty() && (!price.matches(Regex("\\d+")) || price.length > 20)) {
-            binding.etPrice.error = "Solo números (máx 20 dígitos)"
-            isValid = false
-        }
-
-        // VALIDACIÓN 3 → Cantidad (solo números, máx 4 dígitos)
-        if (qty.isNotEmpty() && (!qty.matches(Regex("\\d+")) || qty.length > 4)) {
-            binding.etQuantity.error = "Solo números (máx 4 dígitos)"
-            isValid = false
-        }
-
-        // VALIDACIÓN 4 → Ningún campo vacío
-        if (name.isEmpty() || price.isEmpty() || qty.isEmpty()) {
-            isValid = false
-        }
-
-        binding.btnEdit.isEnabled = isValid
+        binding.btnEdit.isEnabled = camposValidos
+        binding.btnEdit.alpha = if (camposValidos) 1f else 0.5f
     }
 
-    /** GUARDAR CAMBIOS EN BD Y VOLVER */
-    private fun saveChanges() {
-        val newName = binding.etName.text.toString()
-        val newPrice = binding.etPrice.text.toString().toInt()
-        val newQty = binding.etQuantity.text.toString().toInt()
+    private fun actualizarProducto() {
+        val name = binding.etName.text.toString().trim()
+        val price = binding.etPrice.text.toString().trim().toInt()   // ✔ Int
+        val quantity = binding.etQuantity.text.toString().trim().toInt() // ✔ Int
 
-        val updatedItem = currentItem?.copy(
-            name = newName,
-            price = newPrice,
-            quantity = newQty
+        val inventarioActualizado = Inventory(
+            id = receivedInventory.id,
+            name = name,
+            price = price,         // ✔ Int esperado por Inventory
+            quantity = quantity
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            if (updatedItem != null) {
-                repository.updateRepositoy(updatedItem)
-            }
-        }
+        viewModel.updateInventory(inventarioActualizado)
 
         findNavController().popBackStack()
     }
