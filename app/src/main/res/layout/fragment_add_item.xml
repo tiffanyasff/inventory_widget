@@ -16,7 +16,6 @@
         android:padding="20dp"
         tools:context=".view.fragment.AddItemFragment">
 
-        <!-- Título -->
         <TextView
             android:id="@+id/tvTitleAdd"
             android:layout_width="wrap_content"
@@ -28,7 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Campo nombre -->
         <EditText
             android:id="@+id/etName"
             android:layout_width="match_parent"
@@ -42,7 +40,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Campo precio -->
         <EditText
             android:id="@+id/etPrice"
             android:layout_width="match_parent"
@@ -56,7 +53,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Campo cantidad -->
         <EditText
             android:id="@+id/etQuantity"
             android:layout_width="match_parent"
@@ -70,7 +66,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Botón Guardar -->
         <Button
             android:id="@+id/btnAdd"
             android:layout_width="match_parent"
@@ -83,7 +78,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Imagen del producto API -->
         <ImageView
             android:id="@+id/ivImagenApi"
             android:layout_width="120dp"
@@ -94,7 +88,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Título del producto API -->
         <TextView
             android:id="@+id/tvTitleProduct"
             android:layout_width="wrap_content"

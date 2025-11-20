@@ -63,7 +63,6 @@ class InventoryWidget : AppWidgetProvider() {
 
         val views = RemoteViews(context.packageName, R.layout.inventory_widget)
 
-        // ---- CLICK EN GESTIONAR INVENTARIO ----
         val loginIntent = Intent(context, InventoryWidget::class.java).apply {
             action = ACTION_OPEN_LOGIN
         }
@@ -78,7 +77,6 @@ class InventoryWidget : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_manage_text, loginPendingIntent)
         views.setOnClickPendingIntent(R.id.widget_manage_icon, loginPendingIntent)
 
-        // ---- CLICK EN ICONO DEL OJO ----
         val toggleIntent = Intent(context, InventoryWidget::class.java).apply {
             action = ACTION_TOGGLE_VISIBILITY
         }
@@ -92,7 +90,6 @@ class InventoryWidget : AppWidgetProvider() {
 
         views.setOnClickPendingIntent(R.id.widget_visibility_icon, togglePendingIntent)
 
-        // ---- CALCULAR TOTAL ----
         CoroutineScope(Dispatchers.IO).launch {
             val repository = InventoryRepository(context)
             val list = repository.getListInventory()
@@ -106,7 +103,6 @@ class InventoryWidget : AppWidgetProvider() {
 
             CoroutineScope(Dispatchers.Main).launch {
 
-                // MOSTRAR / OCULTAR SALDO
                 if (isVisible) {
                     views.setTextViewText(R.id.widget_total_value, "$ $formatted")
                     views.setImageViewResource(R.id.widget_visibility_icon, R.drawable.ic_eye_on)
