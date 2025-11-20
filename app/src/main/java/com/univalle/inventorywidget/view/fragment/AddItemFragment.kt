@@ -1,5 +1,4 @@
 package com.univalle.inventorywidget.view.fragment
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +15,6 @@ import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
 class AddItemFragment : Fragment() {
-
     private lateinit var binding: FragmentAddItemBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
@@ -33,8 +31,6 @@ class AddItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         controladores()
         observerViewModel()
-
-
     }
 
     private fun controladores() {
@@ -45,20 +41,24 @@ class AddItemFragment : Fragment() {
     }
 
     private fun saveInvetory(){
+        val productCode = binding.etProductCode.text.toString().toIntOrNull() ?: 0
         val name = binding.etName.text.toString()
         val price = binding.etPrice.text.toString().toInt()
         val quantity = binding.etQuantity.text.toString().toInt()
         val inventory = Inventory(name = name, price = price, quantity = quantity)
         inventoryViewModel.saveInventory(inventory)
-        Log.d("test",inventory.toString())
+        Log.d("test","Código: $productCode, $inventory")
         Toast.makeText(context,"Artículo guardado !!", Toast.LENGTH_SHORT).show()
         findNavController().popBackStack()
-
     }
 
     private fun validarDatos() {
-        val listEditText = listOf(binding.etName, binding.etPrice, binding.etQuantity)
-
+        val listEditText = listOf(
+            binding.etProductCode,
+            binding.etName,
+            binding.etPrice,
+            binding.etQuantity
+        )
         for (editText in listEditText) {
             editText.addTextChangedListener {
                 val isListFull = listEditText.all{
@@ -69,22 +69,16 @@ class AddItemFragment : Fragment() {
         }
     }
 
-
-
     private fun observerViewModel(){
         observerListProduct()
     }
 
     private fun observerListProduct() {
-
         inventoryViewModel.getProducts()
         inventoryViewModel.listProducts.observe(viewLifecycleOwner){ lista ->
-
             val product = lista[2]
             Glide.with(binding.root.context).load(product.image).into(binding.ivImagenApi)
             binding.tvTitleProduct.text = product.title
         }
     }
-
-
 }
