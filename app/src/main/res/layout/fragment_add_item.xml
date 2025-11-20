@@ -29,11 +29,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            app:hintTextColor="@android:color/white"
-            app:boxStrokeColor="@android:color/white"
+            app:hintTextColor="@color/white"
+            app:boxStrokeColor="@color/white"
             app:boxStrokeWidth="2dp"
             app:boxBackgroundMode="outline"
             app:boxBackgroundColor="@android:color/transparent"
+            app:hintAnimationEnabled="true"
+            app:expandedHintEnabled="false"
             app:layout_constraintTop_toBottomOf="@id/tvNameAdd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -43,8 +45,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Código producto"
-                android:textColorHint="@android:color/white"
-                android:textColor="@android:color/white"
+                android:textColorHint="@color/white"
+                android:textColor="@color/white"
                 android:inputType="number"
                 android:maxLength="4"
                 android:padding="12dp"/>
@@ -90,16 +92,24 @@
             app:layout_constraintTop_toBottomOf="@id/etPrice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Botón Guardar con estilo personalizado -->
         <Button
             android:id="@+id/btnSaveInventory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="Guardar"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/button_text_color"
+            android:background="@drawable/button_background"
+            android:paddingVertical="14dp"
             android:enabled="false"
             app:layout_constraintTop_toBottomOf="@+id/etQuantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
         <ImageView
             android:id="@+id/ivImagenApi"
             android:layout_width="150dp"
