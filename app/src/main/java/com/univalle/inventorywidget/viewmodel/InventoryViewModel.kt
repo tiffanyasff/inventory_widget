@@ -22,7 +22,6 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     private val _progresState = MutableLiveData(false)
     val progresState: LiveData<Boolean> = _progresState
 
-    //para almacenar una lista de productos
     private val _listProducts = MutableLiveData<MutableList<Product>>()
     val listProducts: LiveData<MutableList<Product>> = _listProducts
 
