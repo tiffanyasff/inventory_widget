@@ -32,38 +32,19 @@ class ItemDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         configurarToolbar()
-        dataInventory()
-        controladores()
+        obtenerDatos()
+        configurarEventos()
     }
 
     private fun configurarToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
+        binding.toolbarDetail.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
     }
 
-    private fun controladores() {
-        binding.btnDelete.setOnClickListener {
-            mostrarDialogoConfirmacion()
-        }
+    private fun obtenerDatos() {
+        receivedInventory = arguments?.getSerializable("dataInventory") as Inventory
 
-        // ✔ Aquí enviamos "dataInventory", el mismo nombre que recibe ItemEditFragment
-        binding.fbEdit.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putSerializable("dataInventory", receivedInventory)
-            findNavController().navigate(
-                R.id.action_itemDetailsFragment_to_itemEditFragment,
-                bundle
-            )
-        }
-    }
-
-    private fun dataInventory() {
-        // ❗ CAMBIO IMPORTANTE: usamos "dataInventory"
-        val receivedBundle = arguments
-        receivedInventory = receivedBundle?.getSerializable("dataInventory") as Inventory
-
-        // Traer datos actualizados desde Room
         inventoryViewModel.getListInventory()
 
         inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
@@ -72,33 +53,38 @@ class ItemDetailsFragment : Fragment() {
             if (actualizado != null) {
                 receivedInventory = actualizado
 
-                binding.tvItem.text = "Nombre: ${actualizado.name}"
+                binding.tvName.text = "Nombre: ${actualizado.name}"
                 binding.tvPrice.text = "Precio: $ ${actualizado.price}"
                 binding.tvQuantity.text = "Cantidad: ${actualizado.quantity}"
-                binding.txtTotal.text = "Total: $ ${
-                    inventoryViewModel.totalProducto(
-                        actualizado.price,
-                        actualizado.quantity
-                    )
-                }"
+                binding.tvTotal.text =
+                    "Total: $ ${inventoryViewModel.totalProducto(actualizado.price, actualizado.quantity)}"
             }
         }
     }
 
-    private fun mostrarDialogoConfirmacion() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Eliminar producto")
-            .setMessage("¿Deseas eliminar este producto del inventario?")
-            .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
-            .setPositiveButton("Si") { _, _ ->
-                deleteInventory()
-            }
-            .show()
-    }
+    private fun configurarEventos() {
 
-    private fun deleteInventory() {
-        inventoryViewModel.deleteInventory(receivedInventory)
-        inventoryViewModel.getListInventory()
-        findNavController().popBackStack()
+        binding.btnDelete.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Eliminar producto")
+                .setMessage("¿Deseas eliminar este producto del inventario?")
+                .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("Sí") { _, _ ->
+                    inventoryViewModel.deleteInventory(receivedInventory)
+                    inventoryViewModel.getListInventory()
+                    findNavController().popBackStack()
+                }
+                .show()
+        }
+
+        binding.fabEdit.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putSerializable("dataInventory", receivedInventory)
+
+            findNavController().navigate(
+                R.id.action_itemDetailsFragment_to_itemEditFragment,
+                bundle
+            )
+        }
     }
 }
