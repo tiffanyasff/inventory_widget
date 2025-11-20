@@ -1,5 +1,6 @@
 package com.univalle.inventorywidget.view.fragment
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,11 +33,12 @@ class AddItemFragment : Fragment() {
         observerViewModel()
     }
 
-    /**
-     * CRITERIO 2: Mostrar imagen + título del producto traído de la API
-     */
-    private fun observarProductosAPI() {
-        inventoryViewModel.getProducts()
+    private fun controladores() {
+        validarDatos()
+        binding.btnSaveInventory.setOnClickListener {
+            saveInvetory()
+        }
+    }
 
     private fun saveInvetory(){
         val productCode = binding.etProductCode.text.toString().toIntOrNull() ?: 0
