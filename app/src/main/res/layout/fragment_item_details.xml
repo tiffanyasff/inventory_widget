@@ -7,153 +7,165 @@
         <variable
             name="viewModel"
             type="com.univalle.inventorywidget.viewmodel.InventoryViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/backgroundColor"
+        android:background="@color/backgroundColorBlack"
         android:padding="20dp"
-        tools:context=".view.fragment.AddItemFragment">
+        tools:context=".view.fragment.ItemDetailsFragment">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+        <!-- Toolbar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Detalle del Producto"
-            android:textSize="25sp"
-            android:layout_marginBottom="50dp"
+            android:background="@color/backgroundColorGray"
+            app:title="Detalle del producto"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back_24"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/cvInventory"/>
+            app:layout_constraintEnd_toEndOf="parent" />
 
-
+        <!-- Card con información -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cvInventory"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?selectableItemBackground"
+            android:layout_marginTop="20dp"
             android:backgroundTint="@color/backgroundColorItem"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="16dp"
             android:elevation="8dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/btnDelete">
+            app:layout_constraintEnd_toEndOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp">
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Nombre -->
+                <TextView
+                    android:id="@+id/tvLabelName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre:"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                     android:id="@+id/tvItem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Item:"
-                    android:padding="5dp"
+                    android:text="Camisa"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toEndOf="@id/tvLabelName"
+                    app:layout_constraintTop_toTopOf="@id/tvLabelName" />
 
+                <!-- Precio -->
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvLabelPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Precio Unidad :"
-                    android:padding="5dp"
+                    android:text="Precio:"
                     android:textSize="16sp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvItem"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvLabelName" />
 
                 <TextView
                     android:id="@+id/tvPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:padding="5dp"
-                    android:text="$15.000"
+                    android:layout_marginStart="8dp"
+                    android:text="$ 0"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvItem" />
+                    app:layout_constraintStart_toEndOf="@id/tvLabelPrice"
+                    app:layout_constraintTop_toTopOf="@id/tvLabelPrice" />
 
+                <!-- Cantidad -->
                 <TextView
-                    android:id="@+id/tvQuantityAvailible"
+                    android:id="@+id/tvLabelQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cantidad Disponible:"
-                    android:padding="5dp"
+                    android:text="Cantidad:"
                     android:textSize="16sp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvName"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvLabelPrice" />
 
                 <TextView
                     android:id="@+id/tvQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$5"
-                    android:padding="5dp"
+                    android:layout_marginStart="8dp"
+                    android:text="0"
                     android:textSize="16sp"
-                    android:layout_marginEnd="8dp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPrice"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintStart_toEndOf="@id/tvLabelQuantity"
+                    app:layout_constraintTop_toTopOf="@id/tvLabelQuantity" />
 
+                <!-- Total -->
                 <TextView
-                    android:id="@+id/txtTituloTotal"
+                    android:id="@+id/tvLabelTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total:"
-                    android:padding="5dp"
                     android:textSize="16sp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvQuantityAvailible"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvLabelQuantity" />
 
                 <TextView
                     android:id="@+id/txtTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$ 100.000"
-                    android:padding="5dp"
+                    android:layout_marginStart="8dp"
+                    android:text="$ 0"
                     android:textSize="16sp"
-                    android:layout_marginEnd="8dp"
                     android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@+id/tvQuantity"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-
-
+                    app:layout_constraintStart_toEndOf="@id/tvLabelTotal"
+                    app:layout_constraintTop_toTopOf="@id/tvLabelTotal" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.cardview.widget.CardView>
 
+        <!-- Botón ELIMINAR más pequeño y centrado -->
         <Button
             android:id="@+id/btnDelete"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:text="Eliminar"
-            app:layout_constraintTop_toBottomOf="@+id/cvInventory"
+            android:textColor="@android:color/white"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            app:backgroundTint="@color/backgroundColorOrange"
+            app:layout_constraintTop_toBottomOf="@id/cvInventory"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="30dp"/>
 
+        <!-- FAB editar con contentDescription -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fbEdit"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:contentDescription="button add"
-            android:layout_marginRight="16dp"
-            android:backgroundTint="@color/backgroudColorBtn"
-            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/backgroundColorOrange"
             android:src="@drawable/ic_edit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:contentDescription="Editar artículo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

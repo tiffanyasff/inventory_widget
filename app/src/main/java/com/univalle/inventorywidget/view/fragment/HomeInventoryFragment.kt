@@ -41,6 +41,12 @@ class HomeInventoryFragment : Fragment() {
         configurarBotonAtras()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 🔥 Refrescar datos cada vez que se vuelve a esta pantalla
+        inventoryViewModel.getListInventory()
+    }
+
     private fun configurarToolbar() {
         binding.ivLogout.setOnClickListener {
             val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
@@ -56,13 +62,13 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun observadoresViewModel() {
-        inventoryViewModel.getListInventory()
         inventoryViewModel.listInventory.observe(viewLifecycleOwner) { list ->
             binding.recyclerview.apply {
                 layoutManager = LinearLayoutManager(context)
                 adapter = InventoryAdapter(list, findNavController())
             }
         }
+
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
             binding.progress.isVisible = status
         }
@@ -71,10 +77,10 @@ class HomeInventoryFragment : Fragment() {
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // Enviar la app al escritorio en lugar de regresar al Login
                 requireActivity().moveTaskToBack(true)
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback) }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 }
