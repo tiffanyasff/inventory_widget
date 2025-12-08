@@ -14,6 +14,8 @@ import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 import androidx.appcompat.app.AlertDialog
 
 
+private val FragmentItemDetailsBinding.toolbar: Any
+
 class ItemDetailsFragment : Fragment() {
     private lateinit var binding: FragmentItemDetailsBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
@@ -48,10 +50,13 @@ class ItemDetailsFragment : Fragment() {
             mostrarDialogoConfirmacion()
         }
 
-        binding.fbEdit.setOnClickListener {
+        val onClickListener = binding.fbEdit.setOnClickListener {
             val bundle = Bundle()
             bundle.putSerializable("dataInventory", receivedInventory)
-            findNavController().navigate(R.id.action_itemDetailsFragment_to_itemEditFragment, bundle)
+            findNavController().navigate(
+                R.id.action_itemDetailsFragment_to_itemEditFragment,
+                bundle
+            )
         }
     }
 
