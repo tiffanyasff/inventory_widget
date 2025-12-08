@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeInventoryFragment : Fragment() {
+
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
@@ -29,54 +30,55 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Verificar sesión
+        // Validar sesión
         val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+
         if (!isLoggedIn) {
             findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
             return
         }
 
         configurarToolbar()
-        configurarRecyclerView()
-        observadoresViewModel()
+        configurarEventos()
+        observarViewModel()
         configurarBotonAtras()
     }
 
-    private fun configurarToolbar() {
-        binding.ivLogout.setOnClickListener {
-            val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
-            sharedPref.edit().clear().apply()
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
-        }
+    override fun onResume() {
+        super.onResume()
+        inventoryViewModel.getListInventory()
     }
 
-    private fun configurarRecyclerView() {
-        binding.fabAgregar.setOnClickListener {
+    private fun configurarToolbar() {
+        // Toolbar sin menú por ahora
+    }
+
+    private fun configurarEventos() {
+        binding.fabAdd.setOnClickListener {
             findNavController().navigate(R.id.action_homeInventoryFragment_to_addItemFragment)
         }
     }
 
-    private fun observadoresViewModel() {
-        inventoryViewModel.getListInventory()
-        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { list ->
-            binding.recyclerview.apply {
+    private fun observarViewModel() {
+        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
+            binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = InventoryAdapter(list, findNavController())
+                adapter = InventoryAdapter(lista, findNavController())
             }
         }
+
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
-            binding.progress.isVisible = status
+            binding.progressBarHome.isVisible = status
         }
     }
 
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // Enviar la app al escritorio en lugar de regresar al Login
                 requireActivity().moveTaskToBack(true)
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback) }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 }

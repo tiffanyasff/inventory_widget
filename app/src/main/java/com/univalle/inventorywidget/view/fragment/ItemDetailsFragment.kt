@@ -12,9 +12,8 @@ import com.univalle.inventorywidget.databinding.FragmentItemDetailsBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 import androidx.appcompat.app.AlertDialog
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+
 class ItemDetailsFragment : Fragment() {
     private lateinit var binding: FragmentItemDetailsBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
