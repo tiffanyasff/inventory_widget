@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122254198446",
+    "project_id": "android-app-cdf20",
+    "storage_bucket": "android-app-cdf20.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122254198446:android:147bad09f52b1756d08f3f",
+        "android_client_info": {
+          "package_name": "com.univalle.inventorywidget"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCajRqW2wNm2mX913EGhkz6WpQ7tXCQmkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
