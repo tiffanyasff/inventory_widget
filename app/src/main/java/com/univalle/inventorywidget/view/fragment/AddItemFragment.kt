@@ -14,7 +14,9 @@ import com.bumptech.glide.Glide
 import com.univalle.inventorywidget.databinding.FragmentAddItemBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddItemFragment : Fragment() {
 
     private lateinit var binding: FragmentAddItemBinding

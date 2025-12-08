@@ -14,7 +14,9 @@ import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 import androidx.activity.OnBackPressedCallback
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeInventoryFragment : Fragment() {
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()

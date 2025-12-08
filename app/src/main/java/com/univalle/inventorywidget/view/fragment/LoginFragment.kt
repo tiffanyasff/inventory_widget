@@ -11,8 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentLoginBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.Executor
-
+@AndroidEntryPoint 
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
