@@ -13,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/backgroundColorBlack"
-        android:padding="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="20dp"
+        android:paddingTop="80dp"
         tools:context=".view.fragment.AddItemFragment">
 
         <com.google.android.material.appbar.MaterialToolbar
