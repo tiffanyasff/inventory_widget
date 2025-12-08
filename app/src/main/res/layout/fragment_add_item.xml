@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/backgroundColor"
+        android:background="@color/backgroundColorBlack"
         android:padding="20dp"
         tools:context=".view.fragment.AddItemFragment">
 
@@ -20,7 +20,8 @@
             android:id="@+id/tvNameAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Adicionar Artículo"
+            android:textColor="@android:color/white"
+            android:text="Agregar producto"
             android:textSize="25sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,8 +35,8 @@
             android:layout_marginTop="20dp"
             android:textColorHint="@color/white"
             app:hintTextColor="@color/white"
-            app:boxStrokeColor="@color/white"
-            app:boxStrokeWidth="2dp"
+            app:boxStrokeColor="@color/edittext_box_stroke"
+            app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp"
             app:hintEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/tvNameAdd"
@@ -52,21 +53,32 @@
                 android:maxLength="4"
                 android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <EditText
-            android:id="@+id/etName"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilName"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="Nombre artículo"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_redondo"
-            android:padding="12dp"
-            android:inputType="text"
-            android:maxLength="10"
+            android:textColorHint="@color/white"
+            app:hintTextColor="@color/white"
+            app:boxStrokeColor="@color/edittext_box_stroke"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/tilProductCode"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre artículo"
+                android:textColor="@color/black"
+                android:inputType="text"
+                android:maxLength="40"
+                android:padding="12dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <EditText
             android:id="@+id/etPrice"
@@ -78,7 +90,7 @@
             android:background="@drawable/bg_redondo"
             android:padding="12dp"
             android:inputType="number"
-            app:layout_constraintTop_toBottomOf="@id/etName"
+            app:layout_constraintTop_toBottomOf="@id/tilName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
