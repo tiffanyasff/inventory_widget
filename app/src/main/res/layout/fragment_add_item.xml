@@ -48,11 +48,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Código producto"
-                android:textColor="@color/black"
                 android:inputType="number"
                 android:maxLength="4"
-                android:padding="12dp" />
+                android:padding="12dp"
+                android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -74,25 +75,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre artículo"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:inputType="text"
                 android:maxLength="40"
                 android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/etPrice"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPrice"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Precio"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_redondo"
-            android:padding="12dp"
-            android:inputType="number"
+            android:textColorHint="@color/white"
+            app:hintTextColor="@color/white"
+            app:boxStrokeColor="@color/edittext_box_stroke"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/tilName"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:maxLength="20"
+                android:textColor="@color/white"
+                android:padding="12dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <EditText
             android:id="@+id/etQuantity"
@@ -104,7 +119,7 @@
             android:background="@drawable/bg_redondo"
             android:padding="12dp"
             android:inputType="number"
-            app:layout_constraintTop_toBottomOf="@id/etPrice"
+            app:layout_constraintTop_toBottomOf="@id/tilPrice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
