@@ -109,19 +109,32 @@
                 android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/etQuantity"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilQuantity"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="Cantidad"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_redondo"
-            android:padding="12dp"
-            android:inputType="number"
+            android:textColorHint="@color/white"
+            app:hintTextColor="@color/white"
+            app:boxStrokeColor="@color/edittext_box_stroke"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/tilPrice"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cantidad"
+                android:textColor="@color/white"
+                android:inputType="number"
+                android:maxLength="4"
+                android:padding="12dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveInventory"
@@ -136,7 +149,7 @@
             android:paddingVertical="14dp"
             android:enabled="false"
             app:cornerRadius="12dp"
-            app:layout_constraintTop_toBottomOf="@id/etQuantity"
+            app:layout_constraintTop_toBottomOf="@id/tilQuantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

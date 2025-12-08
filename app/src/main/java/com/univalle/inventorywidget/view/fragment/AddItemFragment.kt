@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide
 import com.univalle.inventorywidget.databinding.FragmentAddItemBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import com.google.android.material.textfield.TextInputEditText
+import androidx.core.widget.addTextChangedListener
 
 class AddItemFragment : Fragment() {
     private lateinit var binding: FragmentAddItemBinding
@@ -53,16 +55,16 @@ class AddItemFragment : Fragment() {
     }
 
     private fun validarDatos() {
-        val listEditText = listOf(
+        val listEditText: List<TextInputEditText> = listOf(
             binding.etProductCode,
             binding.etName,
             binding.etPrice,
             binding.etQuantity
         )
-        for (editText in listEditText) {
+        listEditText.forEach { editText ->
             editText.addTextChangedListener {
-                val isListFull = listEditText.all{
-                    it.text.isNotEmpty() // si toda la lista no está vacía
+                val isListFull = listEditText.all { campo ->
+                    !campo.text.isNullOrBlank()
                 }
                 binding.btnSaveInventory.isEnabled = isListFull
             }
