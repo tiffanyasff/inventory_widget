@@ -13,7 +13,7 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.Executor
-@AndroidEntryPoint 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
