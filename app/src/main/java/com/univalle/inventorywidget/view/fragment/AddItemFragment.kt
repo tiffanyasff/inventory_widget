@@ -18,19 +18,21 @@ import androidx.core.widget.addTextChangedListener
 
 class AddItemFragment : Fragment() {
     private lateinit var binding: FragmentAddItemBinding
+
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAddItemBinding.inflate(inflater)
-        binding.lifecycleOwner = this
+        binding = FragmentAddItemBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configurarToolbar()
         controladores()
         observerViewModel()
     }
@@ -39,6 +41,13 @@ class AddItemFragment : Fragment() {
         validarDatos()
         binding.btnSaveInventory.setOnClickListener {
             saveInvetory()
+        }
+    }
+
+    private fun configurarToolbar() {
+        binding.toolbarAdd.setNavigationOnClickListener {
+            findNavController().popBackStack()
+
         }
     }
 

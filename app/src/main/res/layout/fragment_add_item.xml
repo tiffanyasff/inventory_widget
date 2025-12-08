@@ -16,13 +16,14 @@
         android:padding="20dp"
         tools:context=".view.fragment.AddItemFragment">
 
-        <TextView
-            android:id="@+id/tvNameAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:text="Agregar producto"
-            android:textSize="25sp"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarAdd"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@color/backgroundColorGray"
+            app:title="Agregar producto"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back_24"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -39,7 +40,7 @@
             app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp"
             app:hintEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/tvNameAdd"
+            app:layout_constraintTop_toBottomOf="@id/toolbarAdd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
