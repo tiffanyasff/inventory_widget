@@ -31,9 +31,7 @@ class HomeInventoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // ✅ NO verificar sesión aquí - ya lo hace LoginActivity
-        // La verificación de sesión debe estar SOLO en LoginActivity
+        
 
         configurarToolbar()
         configurarEventos()

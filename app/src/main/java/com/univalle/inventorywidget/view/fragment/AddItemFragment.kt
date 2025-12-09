@@ -10,14 +10,19 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.firestore.FirebaseFirestore
 import com.univalle.inventorywidget.databinding.FragmentAddItemBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+// import com.univalle.inventorywidget.model.Product // Esta importación no parece usarse, puedes borrarla si quieres.
 
 class AddItemFragment : Fragment() {
 
     private lateinit var binding: FragmentAddItemBinding
+    // Nota: Si usas Hilt, deberías agregar @AndroidEntryPoint a la clase
     private val inventoryViewModel: InventoryViewModel by viewModels()
+
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,20 +33,18 @@ class AddItemFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         botones()
         validarDatos()
     }
 
     private fun botones() {
-        // 🔙 Flecha atrás (arrow back)
         binding.ivBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
-        // Guardar
         binding.btnSaveInventory.setOnClickListener {
             saveInventory()
         }
@@ -49,28 +52,44 @@ class AddItemFragment : Fragment() {
 
     private fun saveInventory() {
 
-        val productCode = binding.etProductCode.text.toString().toIntOrNull() ?: 0
-        val name = binding.etName.text.toString()
-        val price = binding.etPrice.text.toString().toIntOrNull() ?: 0
-        val quantity = binding.etQuantity.text.toString().toIntOrNull() ?: 0
+        val rawCode = binding.etProductCode.text.toString()
+        val rawName = binding.etName.text.toString()
+        val rawPrice = binding.etPrice.text.toString()
+        val rawQty = binding.etQuantity.text.toString()
 
-        val inventory = Inventory(
-            name = name,
-            price = price,
-            quantity = quantity
-        )
 
-        inventoryViewModel.saveInventory(inventory)
+        if (rawCode.isNotEmpty() && rawName.isNotEmpty() && rawPrice.isNotEmpty() && rawQty.isNotEmpty()) {
 
-        Log.d("test", "Código: $productCode, $inventory")
 
-        Toast.makeText(requireContext(), "Artículo guardado !!", Toast.LENGTH_SHORT).show()
+            val productCode = rawCode.toInt()
+            val price = rawPrice.toInt()
+            val quantity = rawQty.toInt()
 
-        findNavController().popBackStack()
+
+            val datos = hashMapOf(
+                "productCode" to productCode,
+                "name" to rawName,
+                "price" to price,
+                "quantity" to quantity
+            )
+
+            db.collection("Articulos")
+                .document(productCode.toString())
+                .set(datos)
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Artículo guardado", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                }
+
+        } else {
+            Toast.makeText(context, "Por favor llena todos los campos", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun validarDatos() {
-
         val listEditText = listOf(
             binding.etProductCode,
             binding.etName,
@@ -80,14 +99,11 @@ class AddItemFragment : Fragment() {
 
         for (editText in listEditText) {
             editText.addTextChangedListener {
-
-                val isListFull = listEditText.all {
-                    it.text.isNotEmpty()
+                val isListFull = listEditText.all { view ->
+                    view.text.isNotEmpty()
                 }
 
                 binding.btnSaveInventory.isEnabled = isListFull
-
-                // si está deshabilitado, que sea más opaco
                 binding.btnSaveInventory.alpha = if (isListFull) 1f else 0.5f
             }
         }
