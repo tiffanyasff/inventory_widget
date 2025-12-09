@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,14 +14,17 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
-import androidx.activity.OnBackPressedCallback
 
 class HomeInventoryFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentHomeInventoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -28,14 +32,8 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Validar sesión
-        val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
-
-        if (!isLoggedIn) {
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
-            return
-        }
+        // ✅ NO verificar sesión aquí - ya lo hace LoginActivity
+        // La verificación de sesión debe estar SOLO en LoginActivity
 
         configurarToolbar()
         configurarEventos()
@@ -49,12 +47,14 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun configurarToolbar() {
-        // Toolbar sin menú por ahora
+        // Toolbar configurado en MainActivity
     }
 
     private fun configurarEventos() {
         binding.fabAdd.setOnClickListener {
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_addItemFragment)
+            findNavController().navigate(
+                R.id.action_homeInventoryFragment_to_addItemFragment
+            )
         }
     }
 
@@ -74,9 +74,13 @@ class HomeInventoryFragment : Fragment() {
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                // Minimizar app en lugar de cerrarla
                 requireActivity().moveTaskToBack(true)
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            callback
+        )
     }
 }

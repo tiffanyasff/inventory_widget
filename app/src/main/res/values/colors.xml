@@ -11,5 +11,8 @@
     <color name="backgroundColorGray">#424242</color>
     <color name="gray">#9E9E9E</color>
     <color name="primaryButton">#4CAF50</color>
-    <color name="redError">#FF3B30</color>
+    <color name="textColorWhite">#FFFFFF</color>
+    <color name="errorRed">#FF0000</color>
+    <color name="focusedBorder">#FFFFFF</color>
+    <color name="unfocusedBorder">#666666</color>
 </resources>
