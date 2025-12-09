@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "mock-project-id",
-    "storage_bucket": "mock-project-id.appspot.com"
+    "project_number": "122254198446",
+    "project_id": "android-app-cdf20",
+    "storage_bucket": "android-app-cdf20.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:mockapikey",
+        "mobilesdk_app_id": "1:122254198446:android:147bad09f52b1756d08f3f",
         "android_client_info": {
           "package_name": "com.univalle.inventorywidget"
         }
@@ -15,19 +15,12 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "mock-api-key"
+          "current_key": "AIzaSyCajRqW2wNm2mX913EGhkz6WpQ7tXCQmkY"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
           "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

@@ -3,18 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
-
-    <!-- 🔹 LOGIN (HU 2.0) -->
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.univalle.inventorywidget.view.fragment.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login">
-        <action
-            android:id="@+id/action_loginFragment_to_homeInventoryFragment"
-            app:destination="@id/homeInventoryFragment" />
-    </fragment>
+    app:startDestination="@id/homeInventoryFragment">
 
     <!-- 🔹 HOME INVENTARIO (HU 3.0) -->
     <fragment
@@ -22,17 +11,14 @@
         android:name="com.univalle.inventorywidget.view.fragment.HomeInventoryFragment"
         android:label="fragment_home_inventory"
         tools:layout="@layout/fragment_home_inventory">
+
         <action
             android:id="@+id/action_homeInventoryFragment_to_addItemFragment"
             app:destination="@id/addItemFragment" />
+
         <action
             android:id="@+id/action_homeInventoryFragment_to_itemDetailsFragment"
             app:destination="@id/itemDetailsFragment" />
-        <action
-            android:id="@+id/action_homeInventoryFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@+id/loginFragment"
-            app:popUpToInclusive="true" />
     </fragment>
 
     <!-- 🔹 AGREGAR PRODUCTO (HU 4.0) -->

@@ -4,6 +4,10 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp") // Para Room
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -34,7 +38,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }
@@ -43,6 +46,8 @@ android {
         compose = false
         viewBinding = true
         dataBinding = true
+        // Si NO usarás Jetpack Compose, quita esta línea:
+        // compose = true
     }
 }
 
@@ -64,6 +69,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
 
     // Activity y Fragment
+    // Activity y Fragment - ACTUALIZADO
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.fragment:fragment-ktx:1.8.5")
 
@@ -73,20 +79,11 @@ dependencies {
 
     // Corrutinas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
-    // IMPORTANTE: Para usar await() con Firebase
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
-    // Room (temporal para migración)
+    // Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
-
-    // Firebase BOM - gestiona las versiones automáticamente
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    // Firebase Firestore
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    // Firebase Analytics (opcional)
-    implementation("com.google.firebase:firebase-analytics-ktx")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -95,14 +92,10 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // Animaciones
+    // animaciones
     implementation("com.getbase:floatingactionbutton:1.10.1")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("com.airbnb.android:lottie:6.0.0")
-
-    // Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.48")
-    ksp("com.google.dagger:hilt-compiler:2.48")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
