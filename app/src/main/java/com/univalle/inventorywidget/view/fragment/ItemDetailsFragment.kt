@@ -13,9 +13,6 @@ import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 import androidx.appcompat.app.AlertDialog
 
-
-private val FragmentItemDetailsBinding.toolbar: Any
-
 class ItemDetailsFragment : Fragment() {
     private lateinit var binding: FragmentItemDetailsBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
@@ -38,7 +35,7 @@ class ItemDetailsFragment : Fragment() {
     }
 
     private fun configurarToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
+        binding.toolbarDetail.setNavigationOnClickListener {
             // Volver al Home
             findNavController().popBackStack()
         }
@@ -50,7 +47,7 @@ class ItemDetailsFragment : Fragment() {
             mostrarDialogoConfirmacion()
         }
 
-        val onClickListener = binding.fbEdit.setOnClickListener {
+        val onClickListener = binding.fabEdit.setOnClickListener {
             val bundle = Bundle()
             bundle.putSerializable("dataInventory", receivedInventory)
             findNavController().navigate(
@@ -65,10 +62,10 @@ class ItemDetailsFragment : Fragment() {
     private fun dataInventory() {
         val receivedBundle = arguments
         receivedInventory = receivedBundle?.getSerializable("clave") as Inventory
-        binding.tvItem.text = "${receivedInventory.name}"
+        binding.tvName.text = "${receivedInventory.name}"
         binding.tvPrice.text = "$ ${receivedInventory.price}"
         binding.tvQuantity.text = "${receivedInventory.quantity}"
-        binding.txtTotal.text = "$ ${
+        binding.tvTotal.text = "$ ${
             inventoryViewModel.totalProducto(
                 receivedInventory.price,
                 receivedInventory.quantity
@@ -94,5 +91,4 @@ class ItemDetailsFragment : Fragment() {
         inventoryViewModel.getListInventory()
         findNavController().popBackStack()
     }
-
 }

@@ -8,13 +8,20 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.univalle.inventorywidget.repository.InventoryRepository
 import com.univalle.inventorywidget.view.MainActivity
+import dagger.hilt.android.AndroidEntryPoint // Import this
+import javax.inject.Inject // Import this
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
+@AndroidEntryPoint // 1. Add this annotation
 class InventoryWidget : AppWidgetProvider() {
+
+    // 2. Inject the repository
+    @Inject
+    lateinit var repository: InventoryRepository
 
     companion object {
         private const val ACTION_OPEN_LOGIN = "ACTION_OPEN_LOGIN"
@@ -91,7 +98,10 @@ class InventoryWidget : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_visibility_icon, togglePendingIntent)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val repository = InventoryRepository(context)
+            // 3. Remove the line below that caused the error
+            // val repository = InventoryRepository(context)
+
+            // Use the injected 'repository' variable directly
             val list = repository.getListInventory()
 
             val total = list.sumOf { it.price * it.quantity }

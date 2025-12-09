@@ -6,8 +6,12 @@ import java.io.Serializable
 
 @Entity
 data class Inventory(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val name: String,
-    val price: Int,
-    val quantity: Int): Serializable
+    @PrimaryKey
+    var id: String = "",
+    var name: String = "",
+    var price: Int = 0,
+    var quantity: Int = 0
+) : Serializable {
+    // Constructor vacío requerido por Firebase Firestore
+    constructor() : this("", "", 0, 0)
+}

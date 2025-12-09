@@ -1,20 +1,20 @@
 package com.univalle.inventorywidget.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.InventoryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class InventoryViewModel(application: Application) : AndroidViewModel(application) {
-    val context = getApplication<Application>()
-    private val inventoryRepository = InventoryRepository(context)
-
+@HiltViewModel
+class InventoryViewModel @Inject constructor(
+    private val inventoryRepository: InventoryRepository
+) : ViewModel() {
 
     private val _listInventory = MutableLiveData<MutableList<Inventory>>()
     val listInventory: LiveData<MutableList<Inventory>> get() = _listInventory
@@ -27,12 +27,13 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun saveInventory(inventory: Inventory) {
         viewModelScope.launch {
-
             _progresState.value = true
             try {
                 inventoryRepository.saveInventory(inventory)
-                _progresState.value = false
             } catch (e: Exception) {
+                // Considera agregar un LiveData para errores
+                e.printStackTrace()
+            } finally {
                 _progresState.value = false
             }
         }
@@ -43,11 +44,11 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             _progresState.value = true
             try {
                 _listInventory.value = inventoryRepository.getListInventory()
-                _progresState.value = false
             } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 _progresState.value = false
             }
-
         }
     }
 
@@ -56,11 +57,11 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             _progresState.value = true
             try {
                 inventoryRepository.deleteInventory(inventory)
-                _progresState.value = false
             } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 _progresState.value = false
             }
-
         }
     }
 
@@ -69,8 +70,9 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             _progresState.value = true
             try {
                 inventoryRepository.updateRepositoy(inventory)
-                _progresState.value = false
             } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 _progresState.value = false
             }
         }
@@ -81,9 +83,9 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             _progresState.value = true
             try {
                 _listProducts.value = inventoryRepository.getProducts()
-                _progresState.value = false
-
             } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 _progresState.value = false
             }
         }
@@ -93,4 +95,3 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
         return (price * quantity).toDouble()
     }
 }
-
