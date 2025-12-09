@@ -6,9 +6,10 @@
     <data>
         <variable
             name="viewModel"
-            type="com.univalle.inventorywidget.viewmodel.InventoryViewModel" />
+            type="com.univalle.inventorywidget.viewmodel.InventoryViewModel"/>
     </data>
 
+    <!-- FIXED: Removed the "/" at the end of this line so it stays open -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +23,8 @@
             android:text="Agregar Artículo"
             android:textColor="@color/black"
             android:textSize="25sp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <!-- Top bar -->
         <LinearLayout
             android:id="@+id/topBar"
@@ -78,7 +80,7 @@
             android:padding="12dp"
             android:inputType="text"
             android:maxLength="10"
-            app:layout_constraintTop_toBottomOf="@id/tvNameAdd"
+            app:layout_constraintTop_toBottomOf="@id/tvTitleAdd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -138,7 +140,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

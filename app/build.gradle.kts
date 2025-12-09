@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.constraintlayout)
     val navVersion = "2.8.3"
 
     // Core Android
@@ -102,6 +103,6 @@ dependencies {
 
     //DaggerHilt
     implementation("com.google.dagger:hilt-android:2.51.1")
-    ksp("com.google.dagger:hilt-android-compiler:251.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
 
 }
