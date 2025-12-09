@@ -4,11 +4,9 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt.android)
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") // Para Room
-    id("com.google.gms.google-services")
 }
+
+
 
 android {
     namespace = "com.univalle.inventorywidget"
@@ -101,4 +99,9 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    //DaggerHilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:251.1")
+
 }
