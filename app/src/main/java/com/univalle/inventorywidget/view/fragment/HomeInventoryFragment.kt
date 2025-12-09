@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,13 +14,17 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
-import androidx.activity.OnBackPressedCallback
 
 class HomeInventoryFragment : Fragment() {
+
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentHomeInventoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -27,60 +32,55 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Verificar sesión
-        val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
-        if (!isLoggedIn) {
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
-            return
-        }
+        // ✅ NO verificar sesión aquí - ya lo hace LoginActivity
+        // La verificación de sesión debe estar SOLO en LoginActivity
 
         configurarToolbar()
-        configurarRecyclerView()
-        observadoresViewModel()
+        configurarEventos()
+        observarViewModel()
         configurarBotonAtras()
     }
 
     override fun onResume() {
         super.onResume()
-        // 🔥 Refrescar datos cada vez que se vuelve a esta pantalla
         inventoryViewModel.getListInventory()
     }
 
     private fun configurarToolbar() {
-        binding.ivLogout.setOnClickListener {
-            val sharedPref = requireActivity().getSharedPreferences("SessionPref", 0)
-            sharedPref.edit().clear().apply()
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_loginFragment)
+        // Toolbar configurado en MainActivity
+    }
+
+    private fun configurarEventos() {
+        binding.fabAdd.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_homeInventoryFragment_to_addItemFragment
+            )
         }
     }
 
-    private fun configurarRecyclerView() {
-        binding.fabAgregar.setOnClickListener {
-            findNavController().navigate(R.id.action_homeInventoryFragment_to_addItemFragment)
-        }
-    }
-
-    private fun observadoresViewModel() {
-        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { list ->
-            binding.recyclerview.apply {
+    private fun observarViewModel() {
+        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
+            binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = InventoryAdapter(list, findNavController())
+                adapter = InventoryAdapter(lista, findNavController())
             }
         }
 
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
-            binding.progress.isVisible = status
+            binding.progressBarHome.isVisible = status
         }
     }
 
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                // Minimizar app en lugar de cerrarla
                 requireActivity().moveTaskToBack(true)
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            callback
+        )
     }
 }
