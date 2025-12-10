@@ -31,7 +31,7 @@ class HomeInventoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
 
         configurarToolbar()
         configurarEventos()
@@ -45,7 +45,7 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun configurarToolbar() {
-        // Toolbar configurado en MainActivity
+
     }
 
     private fun configurarEventos() {
@@ -72,7 +72,6 @@ class HomeInventoryFragment : Fragment() {
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // Minimizar app en lugar de cerrarla
                 requireActivity().moveTaskToBack(true)
             }
         }
