@@ -8,11 +8,9 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-// Importación crucial para coroutines y observación de StateFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-// Eliminamos la importación de FirebaseFirestore
-// import com.google.firebase.firestore.FirebaseFirestore
+import com.google.android.material.textfield.TextInputEditText
 import com.univalle.inventorywidget.databinding.FragmentAddItemBinding
 import com.univalle.inventorywidget.repository.AddItemRepository
 import com.univalle.inventorywidget.viewmodel.AddItemViewModel
@@ -27,7 +25,6 @@ class AddItemFragment : Fragment() {
     private val viewModel: AddItemViewModel by viewModels {
         AddItemViewModelFactory(AddItemRepository())
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,10 +44,12 @@ class AddItemFragment : Fragment() {
     // --- Funciones de la Vista ---
 
     private fun botones() {
-        binding.ivBack.setOnClickListener {
+        // --- AGREGADO: Funcionalidad para la flecha del Toolbar ---
+        binding.toolbarAdd.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
 
+        // Botón guardar
         binding.btnSaveInventory.setOnClickListener {
             saveInventory()
         }
@@ -69,10 +68,8 @@ class AddItemFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.saveState.collect { state ->
                 when (state) {
-                    is SaveState.Idle -> {
-                    }
-                    is SaveState.Loading -> {
-                    }
+                    is SaveState.Idle -> { }
+                    is SaveState.Loading -> { }
                     is SaveState.Success -> {
                         Toast.makeText(context, "Artículo guardado", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
@@ -88,21 +85,18 @@ class AddItemFragment : Fragment() {
     }
 
     private fun validarDatos() {
-        val listEditText = listOf(
+        val listEditText: List<TextInputEditText> = listOf(
             binding.etProductCode,
             binding.etName,
             binding.etPrice,
             binding.etQuantity
         )
-
-        for (editText in listEditText) {
+        listEditText.forEach { editText ->
             editText.addTextChangedListener {
-                val isListFull = listEditText.all { view ->
-                    view.text.isNotEmpty()
+                val isListFull = listEditText.all { campo ->
+                    !campo.text.isNullOrBlank()
                 }
-
                 binding.btnSaveInventory.isEnabled = isListFull
-                binding.btnSaveInventory.alpha = if (isListFull) 1f else 0.5f
             }
         }
     }
