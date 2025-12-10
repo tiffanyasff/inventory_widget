@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.InventoryRepository
+import com.univalle.inventorywidget.repository.LoginRepository
 import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 
 
 class InventoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -21,6 +23,28 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val _progresState = MutableLiveData(false)
     val progresState: LiveData<Boolean> = _progresState
+
+
+    // 1. NEW: LiveData to trigger navigation
+    private val _navigateToLogin = MutableLiveData<Boolean>()
+    val navigateToLogin: LiveData<Boolean> get() = _navigateToLogin
+
+    // 2. NEW: The function called by the Fragment
+    private val loginRepository = LoginRepository(context )
+    fun cerrarSesion() {
+        viewModelScope.launch {
+            try {
+                loginRepository.signOut()
+                _navigateToLogin.value = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun onLoginNavigationComplete() {
+        _navigateToLogin.value = false
+    }
 
     //para almacenar una lista de productos
     private val _listProducts = MutableLiveData<MutableList<Product>>()

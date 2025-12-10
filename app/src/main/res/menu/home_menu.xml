@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Cerrar sesión"
+        app:showAsAction="ifRoom" />
+    <!-- "ifRoom" hace que se muestre el icono si hay espacio,
+         de lo contrario se guarda en los 3 puntitos -->
+
+</menu>
