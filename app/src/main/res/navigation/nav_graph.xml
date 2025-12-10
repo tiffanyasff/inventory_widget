@@ -5,6 +5,8 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeInventoryFragment">
 
+
+
     <!-- 🔹 HOME INVENTARIO (HU 3.0) -->
     <fragment
         android:id="@+id/homeInventoryFragment"

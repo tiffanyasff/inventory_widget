@@ -29,7 +29,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Ocultar ActionBar
         supportActionBar?.hide()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -61,7 +60,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupValidation() {
-        // TextWatcher para Email
         binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -70,7 +68,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        // TextWatcher para Password con validación en tiempo real
         binding.etPass.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}

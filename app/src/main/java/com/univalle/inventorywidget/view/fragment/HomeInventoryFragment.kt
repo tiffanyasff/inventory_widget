@@ -1,5 +1,7 @@
 package com.univalle.inventorywidget.view.fragment
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
+import com.univalle.inventorywidget.view.LoginActivity
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 
@@ -32,8 +35,11 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ NO verificar sesión aquí - ya lo hace LoginActivity
-        // La verificación de sesión debe estar SOLO en LoginActivity
+        // Configuración del botón Cerrar Sesión
+        // Verifica si en tu XML el ID es btonSigOut o btoSigOut
+        binding.btonSigOut.setOnClickListener {
+            inventoryViewModel.cerrarSesion()
+        }
 
         configurarToolbar()
         configurarEventos()
@@ -47,7 +53,7 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun configurarToolbar() {
-        // Toolbar configurado en MainActivity
+        // Tu configuración de toolbar si la tienes
     }
 
     private fun configurarEventos() {
@@ -59,6 +65,7 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun observarViewModel() {
+        // Observador de la lista de inventario
         inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
             binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -66,15 +73,39 @@ class HomeInventoryFragment : Fragment() {
             }
         }
 
+        // Observador de la barra de progreso
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
             binding.progressBarHome.isVisible = status
+        }
+
+        // Observador para la navegación de Logout hacia LoginActivity
+        inventoryViewModel.navigateToLogin.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                // 1. IMPORTANTE: Limpiar SharedPreferences para evitar auto-login
+                val sharedPreferences = requireActivity().getSharedPreferences("shared", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // Borra email y isLoggedIn
+                editor.apply()
+
+                // 2. Crear Intent hacia LoginActivity
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+
+                // 3. Flags: Borrar historial para que no puedan volver atrás
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                // 4. Iniciar Activity y cerrar Fragment actual
+                startActivity(intent)
+                requireActivity().finish()
+
+                // 5. Resetear estado en ViewModel
+                inventoryViewModel.onLoginNavigationComplete()
+            }
         }
     }
 
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // Minimizar app en lugar de cerrarla
                 requireActivity().moveTaskToBack(true)
             }
         }
