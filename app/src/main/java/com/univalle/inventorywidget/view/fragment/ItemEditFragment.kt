@@ -88,7 +88,7 @@ class ItemEditFragment : Fragment() {
         val inventarioActualizado = Inventory(
             id = receivedInventory.id,
             name = name,
-            price = price,         // ✔ Int esperado por Inventory
+            price = price,
             quantity = quantity
         )
 
