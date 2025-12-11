@@ -19,7 +19,9 @@ import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
 // import com.univalle.inventorywidget.model.Inventory // Ya no necesitamos Inventory aquí para el adapter
 import com.univalle.inventorywidget.viewmodel.ListItemViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeInventoryFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeInventoryBinding
