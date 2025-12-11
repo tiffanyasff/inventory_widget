@@ -1,13 +1,13 @@
 package com.univalle.inventorywidget.repository
 
-import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.univalle.inventorywidget.model.UserResponse
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class LoginRepository(private val context: Context) {
-
-    private val auth = FirebaseAuth.getInstance()
+class LoginRepository @Inject constructor(
+    private val auth: FirebaseAuth
+) {
 
     // Registrar usuario
     suspend fun registerUser(email: String, password: String): UserResponse {
