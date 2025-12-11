@@ -39,127 +39,111 @@ class LoginActivity : AppCompatActivity() {
         viewModelObservers()
     }
 
-    private fun setupViews() {
-        binding.btnLogin.setOnClickListener {
-            loginUser()
-        }
+    /* ----------------------------------------------------------
+       BOTONES
+    ----------------------------------------------------------- */
 
-        binding.tvRegister.setOnClickListener {
-            registerUser()
-        }
+    private fun setupViews() {
+        binding.btnLogin.setOnClickListener { loginUser() }
+        binding.tvRegister.setOnClickListener { registerUser() }
     }
+
+    /* ----------------------------------------------------------
+       VALIDACIÓN FORMULARIO
+    ----------------------------------------------------------- */
 
     private fun setupValidation() {
         binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                validateFields()
-            }
+            override fun afterTextChanged(s: Editable?) { validateFields() }
         })
 
         binding.etPass.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-
-                val password = s.toString()
-
-                when {
-                    password.isEmpty() -> {
-                        binding.tilPassword.error = null
-                        binding.tilPassword.boxStrokeColor =
-                            ContextCompat.getColor(this@LoginActivity, R.color.unfocusedBorder)
-                    }
-                    password.length < 6 -> {
-                        binding.tilPassword.error = "Mínimo 6 dígitos"
-                        binding.tilPassword.setBoxStrokeColorStateList(
-                            ContextCompat.getColorStateList(
-                                this@LoginActivity,
-                                android.R.color.holo_red_dark
-                            )!!
-                        )
-                    }
-                    else -> {
-                        binding.tilPassword.error = null
-                        binding.tilPassword.boxStrokeColor =
-                            ContextCompat.getColor(this@LoginActivity, R.color.focusedBorder)
-                    }
-                }
-
-                validateFields()
-            }
+            override fun afterTextChanged(s: Editable?) { validateFields() }
         })
     }
 
     private fun validateFields() {
         val email = binding.etEmail.text.toString()
         val password = binding.etPass.text.toString()
+        val valid = email.isNotEmpty() && password.length >= 6
 
-        val isValid = email.isNotEmpty() && password.length >= 6
+        binding.btnLogin.isEnabled = valid
 
-        binding.btnLogin.isEnabled = isValid
-
-        if (isValid) {
-            binding.btnLogin.setTextColor(
-                ContextCompat.getColor(this, R.color.textColorWhite)
-            )
+        if (valid) {
+            binding.btnLogin.setTextColor(ContextCompat.getColor(this, R.color.white))
             binding.btnLogin.backgroundTintList =
                 ContextCompat.getColorStateList(this, R.color.backgroundColorOrange)
         } else {
-            binding.btnLogin.setTextColor(
-                ContextCompat.getColor(this, R.color.backgroundColorGray)
-            )
+            binding.btnLogin.setTextColor(ContextCompat.getColor(this, R.color.gray))
             binding.btnLogin.backgroundTintList =
                 ContextCompat.getColorStateList(this, R.color.backgroundColorGray)
         }
     }
 
+    /* ----------------------------------------------------------
+       OBSERVADORES
+    ----------------------------------------------------------- */
+
     private fun viewModelObservers() {
         loginViewModel.isRegister.observe(this) { userResponse ->
             if (userResponse.isRegister) {
-                saveSession(userResponse.email)
                 Toast.makeText(this, userResponse.message, Toast.LENGTH_SHORT).show()
-                onLoginSuccess()
+                saveSession(userResponse.email)
+                finishLoginFlow()
             } else {
                 Toast.makeText(this, userResponse.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    /* ----------------------------------------------------------
+       REGISTRO
+    ----------------------------------------------------------- */
 
     private fun registerUser() {
         val email = binding.etEmail.text.toString()
         val pass = binding.etPass.text.toString()
-        val userRequest = UserRequest(email, pass)
 
-        if (email.isNotEmpty() && pass.length >= 6) {
-            loginViewModel.registerUser(userRequest)
-        } else {
-            if (email.isEmpty()) {
-                Toast.makeText(this, "Email vacío", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "La contraseña debe tener mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
-            }
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Email vacío", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        if (pass.length < 6) {
+            Toast.makeText(this, "La contraseña debe tener mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        loginViewModel.registerUser(UserRequest(email, pass))
     }
+
+    /* ----------------------------------------------------------
+       LOGIN (MODIFICADO PARA EL WIDGET)
+    ----------------------------------------------------------- */
 
     private fun loginUser() {
         val email = binding.etEmail.text.toString()
-        val password = binding.etPass.text.toString()
+        val pass = binding.etPass.text.toString()
 
-        loginViewModel.loginUser(email, password) { success ->
+        loginViewModel.loginUser(email, pass) { success ->
 
-            val isLogged = sharedPreferences.getBoolean("isLoggedIn", false)
-
-            if (success || isLogged) {
-                saveSession(email)
-                onLoginSuccess()
+            if (!success) {
+                Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
                 return@loginUser
             }
 
-            Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+            saveSession(email)
+            finishLoginFlow()
         }
     }
+
+    /* ----------------------------------------------------------
+       MANEJO DE NAVEGACIÓN SEGÚN ORIGEN
+    ----------------------------------------------------------- */
 
     private fun saveSession(email: String) {
         sharedPreferences.edit()
@@ -168,14 +152,20 @@ class LoginActivity : AppCompatActivity() {
             .apply()
     }
 
-    private fun onLoginSuccess() {
+    private fun finishLoginFlow() {
         val fromWidget = intent.getBooleanExtra("fromWidget", false)
 
         if (fromWidget) {
-            finish()   // 🔥 EXACTO LO QUE EL CRITERIO 10 EXIGE
+            // 🚀 ESTA ES LA LÍNEA CRÍTICA QUE FALTABA 🚀
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("openHomeInventory", true)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
             return
         }
 
+        // Si no viene del widget → flujo normal
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
