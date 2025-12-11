@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import com.univalle.inventorywidget.repository.InventoryRepository
+import com.univalle.inventorywidget.view.LoginActivity
 import com.univalle.inventorywidget.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +24,8 @@ class InventoryWidget : AppWidgetProvider() {
     lateinit var repository: InventoryRepository
 
     companion object {
-        private const val ACTION_OPEN_LOGIN = "ACTION_OPEN_LOGIN"
         private const val ACTION_TOGGLE_VISIBILITY = "ACTION_TOGGLE_VISIBILITY"
+        private const val ACTION_OPEN_APP = "ACTION_OPEN_APP"
         private var isVisible = false
     }
 
@@ -41,22 +42,45 @@ class InventoryWidget : AppWidgetProvider() {
 
         when (intent.action) {
 
-            ACTION_OPEN_LOGIN -> {
-                val activityIntent = Intent(context, MainActivity::class.java)
-                activityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                activityIntent.putExtra("goToLogin", true)
-                context.startActivity(activityIntent)
+            ACTION_OPEN_APP -> {
+                val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
+                val hasSession = shared.getBoolean("isLoggedIn", false)
+
+                val target = if (hasSession) {
+                    // Criterio 14: navegación directa a HomeInventory si hay sesión
+                    Intent(context, MainActivity::class.java)
+                        .putExtra("openHomeInventory", true)
+                } else {
+                    // Criterio 13: sin sesión → ir al login
+                    Intent(context, LoginActivity::class.java)
+                        .putExtra("fromWidget", true)
+                }
+
+                target.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(target)
             }
 
             ACTION_TOGGLE_VISIBILITY -> {
+                val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
+                val hasSession = shared.getBoolean("isLoggedIn", false)
+
+                if (!hasSession) {
+                    // Criterio 10: ojo sin sesión → login y volver al widget
+                    val loginIntent = Intent(context, LoginActivity::class.java)
+                    loginIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    loginIntent.putExtra("fromWidgetEye", true)
+                    context.startActivity(loginIntent)
+                    return
+                }
+
+                // Criterio 7: alternar visibilidad del saldo
                 isVisible = !isVisible
+
                 val manager = AppWidgetManager.getInstance(context)
                 val ids = manager.getAppWidgetIds(
-                    context.getComponentName<InventoryWidget>()
+                    android.content.ComponentName(context, InventoryWidget::class.java)
                 )
-                ids.forEach {
-                    updateWidget(context, manager, it)
-                }
+                ids.forEach { updateWidget(context, manager, it) }
             }
         }
     }
@@ -71,12 +95,12 @@ class InventoryWidget : AppWidgetProvider() {
 
         // ---- CLICK EN GESTIONAR INVENTARIO ----
         val loginIntent = Intent(context, InventoryWidget::class.java).apply {
-            action = ACTION_OPEN_LOGIN
+            action = ACTION_OPEN_APP
         }
 
         val loginPendingIntent = PendingIntent.getBroadcast(
             context,
-            0,
+            200,
             loginIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -91,7 +115,7 @@ class InventoryWidget : AppWidgetProvider() {
 
         val togglePendingIntent = PendingIntent.getBroadcast(
             context,
-            1,
+            201,
             toggleIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
