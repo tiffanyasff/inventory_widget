@@ -43,23 +43,15 @@ class ItemDetailsFragment : Fragment() {
     }
 
     private fun obtenerDatos() {
+        // Recuperamos el objeto que enviamos desde el adapter
         receivedInventory = arguments?.getSerializable("dataInventory") as Inventory
 
-        inventoryViewModel.getListInventory()
-
-        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
-            val actualizado = lista.firstOrNull { it.id == receivedInventory.id }
-
-            if (actualizado != null) {
-                receivedInventory = actualizado
-
-                binding.tvName.text = "Nombre: ${actualizado.name}"
-                binding.tvPrice.text = "Precio: $ ${actualizado.price}"
-                binding.tvQuantity.text = "Cantidad: ${actualizado.quantity}"
-                binding.tvTotal.text =
-                    "Total: $ ${inventoryViewModel.totalProducto(actualizado.price, actualizado.quantity)}"
-            }
-        }
+        // Pintamos directamente los datos en la vista
+        binding.tvName.text = "Nombre: ${receivedInventory.name}"
+        binding.tvPrice.text = "Precio: $ ${receivedInventory.price}"
+        binding.tvQuantity.text = "Cantidad: ${receivedInventory.quantity}"
+        binding.tvTotal.text =
+            "Total: $ ${inventoryViewModel.totalProducto(receivedInventory.price, receivedInventory.quantity)}"
     }
 
     private fun configurarEventos() {
