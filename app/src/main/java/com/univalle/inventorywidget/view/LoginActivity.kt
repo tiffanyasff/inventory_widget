@@ -34,152 +34,78 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
 
-        checkSession()
         setupViews()
         setupValidation()
         viewModelObservers()
     }
 
-    private fun checkSession() {
-        val email = sharedPreferences.getString("email", null)
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-
-        if (email != null && isLoggedIn) {
-            goToHome()
-        }
-    }
+    /* -------------------------------------------------------------------
+       BOTONES
+    ------------------------------------------------------------------- */
 
     private fun setupViews() {
-        binding.btnLogin.setOnClickListener {
-            loginUser()
-        }
-
-        binding.tvRegister.setOnClickListener {
-            registerUser()
-        }
+        binding.btnLogin.setOnClickListener { loginUser() }
+        binding.tvRegister.setOnClickListener { registerUser() }
     }
+
+    /* -------------------------------------------------------------------
+       VALIDACIÓN
+    ------------------------------------------------------------------- */
 
     private fun setupValidation() {
         binding.etEmail.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { validateFields() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                validateFields()
-            }
         })
 
         binding.etPass.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { validateFields() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val password = s.toString()
-
-                when {
-                    password.isEmpty() -> {
-                        binding.tilPassword.error = null
-                        binding.tilPassword.boxStrokeColor = ContextCompat.getColor(
-                            this@LoginActivity,
-                            R.color.unfocusedBorder
-                        )
-                    }
-                    password.length < 6 -> {
-                        binding.tilPassword.error = "Mínimo 6 dígitos"
-                        // Color rojo para el error
-                        binding.tilPassword.setBoxStrokeColorStateList(
-                            ContextCompat.getColorStateList(
-                                this@LoginActivity,
-                                android.R.color.holo_red_dark
-                            )!!
-                        )
-                    }
-                    else -> {
-                        binding.tilPassword.error = null
-                        binding.tilPassword.boxStrokeColor = ContextCompat.getColor(
-                            this@LoginActivity,
-                            R.color.focusedBorder
-                        )
-                    }
-                }
-
-                validateFields()
-            }
         })
     }
 
     private fun validateFields() {
         val email = binding.etEmail.text.toString()
-        val password = binding.etPass.text.toString()
+        val pass = binding.etPass.text.toString()
 
-        // El botón se habilita solo si:
-        // 1. Email no está vacío
-        // 2. Password tiene mínimo 6 dígitos
-        val isValid = email.isNotEmpty() && password.length >= 6
+        val valid = email.isNotEmpty() && pass.length >= 6
 
-        binding.btnLogin.isEnabled = isValid
+        binding.btnLogin.isEnabled = valid
 
-        // Cambiar el color del botón según el estado
-        if (isValid) {
-            binding.btnLogin.setTextColor(
-                ContextCompat.getColor(this, R.color.textColorWhite)
-            )
-            binding.btnLogin.backgroundTintList = ContextCompat.getColorStateList(
-                this,
-                R.color.backgroundColorOrange
-            )
+        if (valid) {
+            binding.btnLogin.setTextColor(ContextCompat.getColor(this, R.color.white))
+            binding.btnLogin.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.backgroundColorOrange)
         } else {
-            binding.btnLogin.setTextColor(
-                ContextCompat.getColor(this, R.color.backgroundColorGray)
-            )
-            binding.btnLogin.backgroundTintList = ContextCompat.getColorStateList(
-                this,
-                R.color.backgroundColorGray
-            )
+            binding.btnLogin.setTextColor(ContextCompat.getColor(this, R.color.gray))
+            binding.btnLogin.backgroundTintList =
+                ContextCompat.getColorStateList(this, R.color.backgroundColorGray)
         }
     }
 
-    private fun viewModelObservers() {
-        observerIsRegister()
-    }
+    /* -------------------------------------------------------------------
+       OBSERVADORES
+    ------------------------------------------------------------------- */
 
-    private fun observerIsRegister() {
+    private fun viewModelObservers() {
         loginViewModel.isRegister.observe(this) { userResponse ->
             if (userResponse.isRegister) {
                 Toast.makeText(this, userResponse.message, Toast.LENGTH_SHORT).show()
-                sharedPreferences.edit()
-                    .putString("email", userResponse.email)
-                    .putBoolean("isLoggedIn", true)
-                    .apply()
-                goToHome()
+                saveSession(userResponse.email)
+                finishLoginFlow()
             } else {
                 Toast.makeText(this, userResponse.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    /* -------------------------------------------------------------------
+       REGISTRO
+    ------------------------------------------------------------------- */
+
     private fun registerUser() {
-        val email = binding.etEmail.text.toString()
-        val pass = binding.etPass.text.toString()
-        val userRequest = UserRequest(email, pass)
-
-        if (email.isNotEmpty() && pass.length >= 6) {
-            loginViewModel.registerUser(userRequest)
-        } else {
-            if (email.isEmpty()) {
-                Toast.makeText(this, "Email vacío", Toast.LENGTH_SHORT).show()
-            } else if (pass.length < 6) {
-                Toast.makeText(this, "La contraseña debe tener mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun goToHome() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
-
-    private fun loginUser() {
         val email = binding.etEmail.text.toString()
         val pass = binding.etPass.text.toString()
 
@@ -189,20 +115,68 @@ class LoginActivity : AppCompatActivity() {
         }
 
         if (pass.length < 6) {
-            Toast.makeText(this, "La contraseña debe tener mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Contraseña mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
             return
         }
 
-        loginViewModel.loginUser(email, pass) { isLogin ->
-            if (isLogin) {
-                sharedPreferences.edit()
-                    .putString("email", email)
-                    .putBoolean("isLoggedIn", true)
-                    .apply()
-                goToHome()
-            } else {
-                Toast.makeText(this, "Login incorrecto", Toast.LENGTH_SHORT).show()
+        loginViewModel.registerUser(UserRequest(email, pass))
+    }
+
+    /* -------------------------------------------------------------------
+       LOGIN (MODIFICADO PARA CRITERIOS 10, 13 Y 14)
+    ------------------------------------------------------------------- */
+
+    private fun loginUser() {
+        val email = binding.etEmail.text.toString()
+        val pass = binding.etPass.text.toString()
+
+        loginViewModel.loginUser(email, pass) { success ->
+            if (!success) {
+                Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                return@loginUser
             }
+
+            saveSession(email)
+            finishLoginFlow()
         }
+    }
+
+    /* -------------------------------------------------------------------
+       SESIÓN Y FLUJO SEGÚN ORIGEN
+    ------------------------------------------------------------------- */
+
+    private fun saveSession(email: String) {
+        sharedPreferences.edit()
+            .putString("email", email)
+            .putBoolean("isLoggedIn", true)
+            .apply()
+    }
+
+    private fun finishLoginFlow() {
+
+        val fromWidgetEye = intent.getBooleanExtra("fromWidgetEye", false)
+        val fromWidget = intent.getBooleanExtra("fromWidget", false)
+
+        // 🔹 Caso 1: Venía del OJO → volver al widget
+        if (fromWidgetEye) {
+            finish()
+            return
+        }
+
+        // 🔹 Caso 2: Venía de Gestionar inventario → ir al HomeInventory
+        if (fromWidget) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("openHomeInventory", true)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        // 🔹 Caso 3: flujo normal de la app
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }
