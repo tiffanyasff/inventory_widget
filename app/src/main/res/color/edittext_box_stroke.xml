@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Borde fuerte cuando tiene focus -->
+    <item
+        android:state_focused="true"
+        android:color="#FFFFFFFF" />   <!-- blanco fuerte -->
+
+    <!-- Borde suave cuando NO tiene focus -->
+    <item
+        android:color="#66FFFFFF" />   <!-- blanco con transparencia (suave) -->
+</selector>
