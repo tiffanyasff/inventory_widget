@@ -67,7 +67,7 @@ class InventoryWidget : AppWidgetProvider() {
                 if (!hasSession) {
                     // Criterio 10: ojo sin sesión → login y volver al widget
                     val loginIntent = Intent(context, LoginActivity::class.java)
-                    loginIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    loginIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     loginIntent.putExtra("fromWidgetEye", true)
                     context.startActivity(loginIntent)
                     return
@@ -90,6 +90,14 @@ class InventoryWidget : AppWidgetProvider() {
     }
 
     private fun updateWidget(context: Context, manager: AppWidgetManager, widgetId: Int) {
+
+        val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
+        val hasSession = shared.getBoolean("isLoggedIn", false)
+
+        // Si no hay sesión, forzamos que sea invisible
+        if (!hasSession) {
+            isVisible = false
+        }
 
         val views = RemoteViews(context.packageName, R.layout.inventory_widget)
 
@@ -123,12 +131,6 @@ class InventoryWidget : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_visibility_icon, togglePendingIntent)
 
         // ---- CALCULAR TOTAL ----
-        // Usamos la variable inyectada 'repository'
-        // IMPORTANTE: Asegurarse de que Hilt haya inyectado antes de llegar aquí.
-        // Dado que se llama desde onReceive -> onUpdate -> updateWidget, debería estar listo.
-        // Si 'repository' no estuviera inicializado, lanzaría UninitializedPropertyAccessException.
-        
-        // Verificación de seguridad básica (aunque con Hilt debería estar)
         if (::repository.isInitialized) {
              CoroutineScope(Dispatchers.IO).launch {
                 // Usamos la instancia inyectada
@@ -144,12 +146,13 @@ class InventoryWidget : AppWidgetProvider() {
                 CoroutineScope(Dispatchers.Main).launch {
 
                     // MOSTRAR / OCULTAR SALDO
-                    if (isVisible) {
+                    // Usamos la variable local 'hasSession' para mayor seguridad además de 'isVisible'
+                    if (isVisible && hasSession) {
                         views.setTextViewText(R.id.widget_total_value, "$ $formatted")
-                        views.setImageViewResource(R.id.widget_visibility_icon, R.drawable.ic_eye_on)
+                        views.setImageViewResource(R.id.widget_visibility_icon, R.drawable.ic_eye_off)
                     } else {
                         views.setTextViewText(R.id.widget_total_value, "$ ****")
-                        views.setImageViewResource(R.id.widget_visibility_icon, R.drawable.ic_eye_off)
+                        views.setImageViewResource(R.id.widget_visibility_icon, R.drawable.ic_eye_on)
                     }
 
                     manager.updateAppWidget(widgetId, views)
