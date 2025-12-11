@@ -41,15 +41,12 @@ class AddItemFragment : Fragment() {
         observeSaveState()
     }
 
-    // --- Funciones de la Vista ---
 
     private fun botones() {
-        // --- AGREGADO: Funcionalidad para la flecha del Toolbar ---
         binding.toolbarAdd.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
 
-        // Botón guardar
         binding.btnSaveInventory.setOnClickListener {
             saveInventory()
         }

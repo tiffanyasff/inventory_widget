@@ -1,35 +1,38 @@
 package com.univalle.inventorywidget.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Product
-import com.univalle.inventorywidget.repository.ListItemRepository
+import com.univalle.inventorywidget.repository.InventoryRepository
 import kotlinx.coroutines.launch
 
-class ListItemViewModel : ViewModel() {
+class ListItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ListItemRepository()
+    // 1. Instanciamos el repositorio que SÍ funciona
+    private val repository = InventoryRepository(application)
 
-    private val _products = MutableLiveData<List<Product>>()
-    val products: LiveData<List<Product>> = _products
+    private val _products = MutableLiveData<MutableList<Product>>()
+    val products: LiveData<MutableList<Product>> = _products
 
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
-
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
 
     fun loadProducts() {
         viewModelScope.launch {
             _loading.value = true
             try {
+                // 2. Usamos la función getProducts() del repositorio
+                // Esta función TIENE la corrección 'product.id = document.id'
                 val result = repository.getProducts()
+
                 _products.value = result
-                _error.value = null
             } catch (e: Exception) {
-                _error.value = e.message
+                e.printStackTrace()
+                // En caso de error, enviamos lista vacía para no romper la UI
+                _products.value = mutableListOf()
             } finally {
                 _loading.value = false
             }

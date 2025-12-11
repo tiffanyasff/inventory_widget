@@ -17,7 +17,7 @@ import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
 import com.univalle.inventorywidget.view.LoginActivity
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
-import com.univalle.inventorywidget.model.Inventory
+// import com.univalle.inventorywidget.model.Inventory // Ya no necesitamos Inventory aquí para el adapter
 import com.univalle.inventorywidget.viewmodel.ListItemViewModel
 
 class HomeInventoryFragment : Fragment() {
@@ -27,7 +27,6 @@ class HomeInventoryFragment : Fragment() {
 
     // ViewModel que trae los productos desde Firebase
     private val listItemViewModel: ListItemViewModel by viewModels()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,8 +40,6 @@ class HomeInventoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configuración del botón Cerrar Sesión
-        // Verifica si en tu XML el ID es btonSigOut o btoSigOut
         binding.btonSigOut.setOnClickListener {
             inventoryViewModel.cerrarSesion()
         }
@@ -55,6 +52,7 @@ class HomeInventoryFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Recargamos los productos cada vez que volvemos a esta pantalla
         listItemViewModel.loadProducts()
     }
 
@@ -72,13 +70,10 @@ class HomeInventoryFragment : Fragment() {
 
     private fun observarViewModel() {
 
-        // 🔹 A) SIGUE tu código de antes (Room + logout)
-        inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
-            binding.rvItems.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = InventoryAdapter(lista, findNavController())
-            }
-        }
+        // --- BLOQUE ELIMINADO ---
+        // Se eliminó inventoryViewModel.listInventory.observe(...)
+        // porque enviaba datos de tipo 'Inventory' y el Adapter ahora solo acepta 'Product'.
+        // ------------------------
 
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
             binding.progressBarHome.isVisible = status
@@ -102,32 +97,21 @@ class HomeInventoryFragment : Fragment() {
             }
         }
 
-        // 🔹 B) NUEVO: lista que viene desde Firebase
+        // --- BLOQUE CORREGIDO ---
         listItemViewModel.products.observe(viewLifecycleOwner) { products ->
-
-            // Convertimos Product -> Inventory para reutilizar InventoryAdapter
-            val inventoryList = products.map { product ->
-                Inventory(
-                    id = product.productCode,   // usamos el código como id
-                    name = product.name,
-                    price = product.price,
-                    quantity = product.quantity
-                )
-            }.toMutableList()
-
             binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = InventoryAdapter(inventoryList, findNavController())
+
+                // CORRECCIÓN: Pasamos la lista 'products' directamente.
+                // Esta lista es de tipo List<Product>, que coincide con lo que pide tu Adapter actualizado.
+                adapter = InventoryAdapter(products, findNavController())
             }
         }
 
-        // 🔹 C) NUEVO: loading de Firebase
         listItemViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            // Si prefieres, puedes combinar esto con progresState
             binding.progressBarHome.isVisible = isLoading
         }
     }
-
 
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {

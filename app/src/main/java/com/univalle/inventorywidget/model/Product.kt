@@ -1,10 +1,15 @@
 package com.univalle.inventorywidget.model
 
-import com.google.gson.annotations.SerializedName
+import com.google.firebase.firestore.Exclude
+import java.io.Serializable // <--- 1. IMPORTANTE: Agrega este import
 
 data class Product(
-   var productCode: Int = 0,
-   var name: String = "",
-   var price: Int = 0,
-   var quantity: Int = 0
-)
+    // Este campo lo llenamos manualmente, no viene en el JSON del documento
+    @get:Exclude var id: String = "",
+    val productCode: Int = 0,
+    val name: String = "",
+    val price: Int = 0,
+    val quantity: Int = 0
+    // ... otros campos que tengas ...
+
+) : Serializable //
