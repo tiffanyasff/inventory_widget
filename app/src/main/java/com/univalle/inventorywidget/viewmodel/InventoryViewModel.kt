@@ -9,9 +9,8 @@ import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.InventoryRepository
 import com.univalle.inventorywidget.repository.LoginRepository
+import com.univalle.inventorywidget.repository.DeleteItemRepository
 import kotlinx.coroutines.launch
-import com.google.firebase.auth.FirebaseAuth
-
 
 class InventoryViewModel(application: Application) : AndroidViewModel(application) {
     val context = getApplication<Application>()
@@ -117,5 +116,31 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     fun totalProducto(price: Int, quantity: Int): Double {
         return (price * quantity).toDouble()
     }
+
+    private val deleteItemRepository = DeleteItemRepository()
+    fun deleteProduct(productId: String) {
+        viewModelScope.launch {
+
+            _progresState.value = true
+
+            try {
+
+                val result = deleteItemRepository.deleteItem(productId)
+
+                _progresState.value = false
+
+                if (result.isSuccess) {
+
+                    getProducts()
+                } else {
+                    val error = result.exceptionOrNull()
+                }
+            } catch (e: Exception) {
+                _progresState.value = false
+                e.printStackTrace()
+            }
+        }
+    }
+
 }
 
