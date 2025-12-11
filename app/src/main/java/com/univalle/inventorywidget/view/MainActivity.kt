@@ -15,19 +15,18 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        //  ⚡ Verifica si LoginActivity pidió abrir HomeInventoryFragment
+        // ✔ Garantiza navegación al HomeInventory si el widget lo solicita
         if (intent.getBooleanExtra("openHomeInventory", false)) {
 
-            // Obtener el NavHostFragment que controla la navegación
-            val navHostFragment = supportFragmentManager
+            val navHost = supportFragmentManager
                 .findFragmentById(R.id.navigationContainer) as NavHostFragment
 
-            val navController = navHostFragment.navController
+            val navController = navHost.navController
 
-            // Navegar explícitamente a HomeInventoryFragment
+            // Navega a HU 3.0
             navController.navigate(R.id.homeInventoryFragment)
 
-            // Eliminar el flag para evitar navegación repetida
+            // Limpia el flag para evitar repeticiones
             intent.removeExtra("openHomeInventory")
         }
     }

@@ -39,37 +39,38 @@ class LoginActivity : AppCompatActivity() {
         viewModelObservers()
     }
 
-    /* ----------------------------------------------------------
+    /* -------------------------------------------------------------------
        BOTONES
-    ----------------------------------------------------------- */
+    ------------------------------------------------------------------- */
 
     private fun setupViews() {
         binding.btnLogin.setOnClickListener { loginUser() }
         binding.tvRegister.setOnClickListener { registerUser() }
     }
 
-    /* ----------------------------------------------------------
-       VALIDACIÓN FORMULARIO
-    ----------------------------------------------------------- */
+    /* -------------------------------------------------------------------
+       VALIDACIÓN
+    ------------------------------------------------------------------- */
 
     private fun setupValidation() {
         binding.etEmail.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { validateFields() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) { validateFields() }
         })
 
         binding.etPass.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { validateFields() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) { validateFields() }
         })
     }
 
     private fun validateFields() {
         val email = binding.etEmail.text.toString()
-        val password = binding.etPass.text.toString()
-        val valid = email.isNotEmpty() && password.length >= 6
+        val pass = binding.etPass.text.toString()
+
+        val valid = email.isNotEmpty() && pass.length >= 6
 
         binding.btnLogin.isEnabled = valid
 
@@ -84,9 +85,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /* ----------------------------------------------------------
+    /* -------------------------------------------------------------------
        OBSERVADORES
-    ----------------------------------------------------------- */
+    ------------------------------------------------------------------- */
 
     private fun viewModelObservers() {
         loginViewModel.isRegister.observe(this) { userResponse ->
@@ -100,9 +101,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /* ----------------------------------------------------------
+    /* -------------------------------------------------------------------
        REGISTRO
-    ----------------------------------------------------------- */
+    ------------------------------------------------------------------- */
 
     private fun registerUser() {
         val email = binding.etEmail.text.toString()
@@ -114,23 +115,22 @@ class LoginActivity : AppCompatActivity() {
         }
 
         if (pass.length < 6) {
-            Toast.makeText(this, "La contraseña debe tener mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Contraseña mínimo 6 dígitos", Toast.LENGTH_SHORT).show()
             return
         }
 
         loginViewModel.registerUser(UserRequest(email, pass))
     }
 
-    /* ----------------------------------------------------------
-       LOGIN (MODIFICADO PARA EL WIDGET)
-    ----------------------------------------------------------- */
+    /* -------------------------------------------------------------------
+       LOGIN (MODIFICADO PARA CRITERIOS 10, 13 Y 14)
+    ------------------------------------------------------------------- */
 
     private fun loginUser() {
         val email = binding.etEmail.text.toString()
         val pass = binding.etPass.text.toString()
 
         loginViewModel.loginUser(email, pass) { success ->
-
             if (!success) {
                 Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
                 return@loginUser
@@ -141,9 +141,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /* ----------------------------------------------------------
-       MANEJO DE NAVEGACIÓN SEGÚN ORIGEN
-    ----------------------------------------------------------- */
+    /* -------------------------------------------------------------------
+       SESIÓN Y FLUJO SEGÚN ORIGEN
+    ------------------------------------------------------------------- */
 
     private fun saveSession(email: String) {
         sharedPreferences.edit()
@@ -153,10 +153,18 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun finishLoginFlow() {
+
+        val fromWidgetEye = intent.getBooleanExtra("fromWidgetEye", false)
         val fromWidget = intent.getBooleanExtra("fromWidget", false)
 
+        // 🔹 Caso 1: Venía del OJO → volver al widget
+        if (fromWidgetEye) {
+            finish()
+            return
+        }
+
+        // 🔹 Caso 2: Venía de Gestionar inventario → ir al HomeInventory
         if (fromWidget) {
-            // 🚀 ESTA ES LA LÍNEA CRÍTICA QUE FALTABA 🚀
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("openHomeInventory", true)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -165,7 +173,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Si no viene del widget → flujo normal
+        // 🔹 Caso 3: flujo normal de la app
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
