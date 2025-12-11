@@ -100,6 +100,13 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
+    // Unit Testing Extensions
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-analytics")
@@ -115,7 +122,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     //Dagger Hilt
-    implementation ("com.google.dagger:hilt-android:2.51")
-    ksp ("com.google.dagger:hilt-compiler:2.51")
+    implementation ("com.google.dagger:hilt-android:2.55")
+    ksp ("com.google.dagger:hilt-compiler:2.55")
 }
-

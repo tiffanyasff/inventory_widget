@@ -15,7 +15,9 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentItemEditBinding
 import com.univalle.inventorywidget.model.Product // Usamos Product (Nube)
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ItemEditFragment : Fragment() {
 
     private lateinit var binding: FragmentItemEditBinding

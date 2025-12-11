@@ -1,22 +1,23 @@
 package com.univalle.inventorywidget.viewmodel
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.InventoryRepository
 import com.univalle.inventorywidget.repository.LoginRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class InventoryViewModel(application: Application) : AndroidViewModel(application) {
-    val context = getApplication<Application>()
-
-    // Instancia del repositorio unificado
-    private val inventoryRepository = InventoryRepository(context)
+@HiltViewModel
+class InventoryViewModel @Inject constructor(
+    private val inventoryRepository: InventoryRepository,
+    private val loginRepository: LoginRepository
+) : ViewModel() {
 
     // LiveData para Inventario (Room / Local)
     private val _listInventory = MutableLiveData<MutableList<Inventory>>()
@@ -33,8 +34,6 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     // LiveData para saber si la EDICIÓN fue exitosa
     private val _editProductStatus = MutableLiveData<Boolean>()
     val editProductStatus: LiveData<Boolean> get() = _editProductStatus
-
-    private val loginRepository = LoginRepository(context)
 
     fun cerrarSesion() {
         viewModelScope.launch {

@@ -1,21 +1,20 @@
 package com.univalle.inventorywidget.repository
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.univalle.inventorywidget.data.InventoryDB
 import com.univalle.inventorywidget.data.InventoryDao
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.model.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class InventoryRepository(val context: Context){
-    private var inventoryDao: InventoryDao = InventoryDB.getDatabase(context).inventoryDao()
+class InventoryRepository @Inject constructor(
+    private val inventoryDao: InventoryDao,
+    private val db: FirebaseFirestore
+) {
 
-    // Instancia de Firestore
-    private val db = FirebaseFirestore.getInstance()
     private val collectionName = "Articulos"
 
     suspend fun saveInventory(inventory: Inventory) = withContext(Dispatchers.IO){

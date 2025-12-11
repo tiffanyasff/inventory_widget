@@ -13,7 +13,9 @@ import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.FragmentItemDetailsBinding
 import com.univalle.inventorywidget.model.Product // IMPORTANTE: Usamos Product, no Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ItemDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentItemDetailsBinding
