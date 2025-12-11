@@ -17,11 +17,17 @@ import com.univalle.inventorywidget.databinding.FragmentHomeInventoryBinding
 import com.univalle.inventorywidget.view.LoginActivity
 import com.univalle.inventorywidget.view.adapter.InventoryAdapter
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import com.univalle.inventorywidget.model.Inventory
+import com.univalle.inventorywidget.viewmodel.ListItemViewModel
 
 class HomeInventoryFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeInventoryBinding
     private val inventoryViewModel: InventoryViewModel by viewModels()
+
+    // ViewModel que trae los productos desde Firebase
+    private val listItemViewModel: ListItemViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +55,7 @@ class HomeInventoryFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        inventoryViewModel.getListInventory()
+        listItemViewModel.loadProducts()
     }
 
     private fun configurarToolbar() {
@@ -65,7 +71,8 @@ class HomeInventoryFragment : Fragment() {
     }
 
     private fun observarViewModel() {
-        // Observador de la lista de inventario
+
+        // 🔹 A) SIGUE tu código de antes (Room + logout)
         inventoryViewModel.listInventory.observe(viewLifecycleOwner) { lista ->
             binding.rvItems.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -73,35 +80,54 @@ class HomeInventoryFragment : Fragment() {
             }
         }
 
-        // Observador de la barra de progreso
         inventoryViewModel.progresState.observe(viewLifecycleOwner) { status ->
             binding.progressBarHome.isVisible = status
         }
 
-        // Observador para la navegación de Logout hacia LoginActivity
         inventoryViewModel.navigateToLogin.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                // 1. IMPORTANTE: Limpiar SharedPreferences para evitar auto-login
-                val sharedPreferences = requireActivity().getSharedPreferences("shared", Context.MODE_PRIVATE)
+                val sharedPreferences = requireActivity()
+                    .getSharedPreferences("shared", Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
-                editor.clear() // Borra email y isLoggedIn
+                editor.clear()
                 editor.apply()
 
-                // 2. Crear Intent hacia LoginActivity
                 val intent = Intent(requireContext(), LoginActivity::class.java)
-
-                // 3. Flags: Borrar historial para que no puedan volver atrás
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-                // 4. Iniciar Activity y cerrar Fragment actual
                 startActivity(intent)
                 requireActivity().finish()
 
-                // 5. Resetear estado en ViewModel
                 inventoryViewModel.onLoginNavigationComplete()
             }
         }
+
+        // 🔹 B) NUEVO: lista que viene desde Firebase
+        listItemViewModel.products.observe(viewLifecycleOwner) { products ->
+
+            // Convertimos Product -> Inventory para reutilizar InventoryAdapter
+            val inventoryList = products.map { product ->
+                Inventory(
+                    id = product.productCode,   // usamos el código como id
+                    name = product.name,
+                    price = product.price,
+                    quantity = product.quantity
+                )
+            }.toMutableList()
+
+            binding.rvItems.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = InventoryAdapter(inventoryList, findNavController())
+            }
+        }
+
+        // 🔹 C) NUEVO: loading de Firebase
+        listItemViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            // Si prefieres, puedes combinar esto con progresState
+            binding.progressBarHome.isVisible = isLoading
+        }
     }
+
 
     private fun configurarBotonAtras() {
         val callback = object : OnBackPressedCallback(true) {
