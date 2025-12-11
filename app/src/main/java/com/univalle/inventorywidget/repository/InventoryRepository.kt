@@ -16,7 +16,6 @@ class InventoryRepository(val context: Context){
 
     // Instancia de Firestore
     private val db = FirebaseFirestore.getInstance()
-    // Confirmado según tu AddItemRepository
     private val collectionName = "Articulos"
 
     suspend fun saveInventory(inventory: Inventory) = withContext(Dispatchers.IO){
@@ -35,18 +34,14 @@ class InventoryRepository(val context: Context){
         inventoryDao.updateInventory(inventory)
     }
 
-
     suspend fun getProducts(): MutableList<Product> {
         return withContext(Dispatchers.IO) {
             try {
                 val snapshot = db.collection(collectionName).get().await()
 
                 val productList = snapshot.documents.map { document ->
-
                     val product = document.toObject(Product::class.java)!!
-
-                    product.id = document.id
-
+                    product.id = document.id // Asignar ID
                     product
                 }.toMutableList()
 
@@ -59,26 +54,49 @@ class InventoryRepository(val context: Context){
         }
     }
 
-
     suspend fun deleteProduct(productId: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d("InventoryRepo", "Intentando eliminar producto con ID: $productId")
-
-                if (productId.isEmpty()) {
-                    Log.e("InventoryRepo", "Error: El ID del producto está vacío.")
-                    return@withContext false
-                }
+                if (productId.isEmpty()) return@withContext false
 
                 db.collection(collectionName)
                     .document(productId)
                     .delete()
                     .await()
-
-                Log.d("InventoryRepo", "Eliminación exitosa en Firestore")
                 true
             } catch (e: Exception) {
-                Log.e("InventoryRepo", "Error eliminando: ${e.message}")
+                e.printStackTrace()
+                false
+            }
+        }
+    }
+
+    // PARA ACTUALIZAR EN FIRESTORE
+    suspend fun updateProduct(product: Product): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (product.id.isEmpty()) {
+                    Log.e("InventoryRepo", "No se puede actualizar: ID vacío")
+                    return@withContext false
+                }
+
+                // Creamos un mapa con los datos a actualizar
+                val updates = hashMapOf<String, Any>(
+                    "name" to product.name,
+                    "price" to product.price,
+                    "quantity" to product.quantity,
+                    "productCode" to product.productCode
+                )
+
+                db.collection(collectionName)
+                    .document(product.id)
+                    .update(updates) // update modifica solo los campos, set sobrescribe todo
+                    .await()
+
+                Log.d("InventoryRepo", "Producto actualizado correctamente")
+                true
+            } catch (e: Exception) {
+                Log.e("InventoryRepo", "Error al actualizar: ${e.message}")
                 e.printStackTrace()
                 false
             }

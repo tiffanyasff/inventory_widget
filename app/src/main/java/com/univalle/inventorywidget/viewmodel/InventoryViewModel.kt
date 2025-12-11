@@ -1,7 +1,7 @@
 package com.univalle.inventorywidget.viewmodel
 
 import android.app.Application
-import android.util.Log // Importante para los Logs
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,13 +22,17 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     private val _listInventory = MutableLiveData<MutableList<Inventory>>()
     val listInventory: LiveData<MutableList<Inventory>> get() = _listInventory
 
-    // Estado de carga
+    // Estado de carga general
     private val _progresState = MutableLiveData(false)
     val progresState: LiveData<Boolean> = _progresState
 
     // LiveData para navegación del Login
     private val _navigateToLogin = MutableLiveData<Boolean>()
     val navigateToLogin: LiveData<Boolean> get() = _navigateToLogin
+
+    // LiveData para saber si la EDICIÓN fue exitosa
+    private val _editProductStatus = MutableLiveData<Boolean>()
+    val editProductStatus: LiveData<Boolean> get() = _editProductStatus
 
     private val loginRepository = LoginRepository(context)
 
@@ -83,7 +87,6 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
             _progresState.value = true
             try {
                 inventoryRepository.deleteInventory(inventory)
-                // Opcional: recargar la lista local aquí si es necesario
                 _progresState.value = false
             } catch (e: Exception) {
                 _progresState.value = false
@@ -109,7 +112,6 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             _progresState.value = true
             try {
-                // Aquí obtenemos la lista y se asignan los IDs en el repositorio
                 _listProducts.value = inventoryRepository.getProducts()
                 _progresState.value = false
             } catch (e: Exception) {
@@ -119,42 +121,57 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    /**
-     * Función corregida para eliminar producto en Firestore
-     */
     fun deleteProduct(product: Product) {
         viewModelScope.launch {
-            _progresState.value = true // Mostramos cargando
+            _progresState.value = true
 
-            // 1. Verificación de ID
             if (product.id.isNullOrEmpty()) {
-                Log.e("ViewModel", "ERROR CRÍTICO: El ID del producto es null o vacío. No se puede borrar.")
+                Log.e("ViewModel", "ERROR CRÍTICO: El ID del producto es null o vacío.")
                 _progresState.value = false
                 return@launch
             }
 
             try {
-                // 2. Llamada al repositorio (usando la variable correcta 'inventoryRepository')
                 Log.d("ViewModel", "Solicitando eliminar producto con ID: ${product.id}")
-
-                // CORRECCIÓN: Usar 'inventoryRepository' (la variable), no 'InventoryRepository' (la clase)
                 val deleted = inventoryRepository.deleteProduct(product.id)
 
                 if (deleted) {
                     Log.d("ViewModel", "Eliminación exitosa. Recargando lista...")
-                    // 3. IMPORTANTE: Recargar la lista para que la UI se actualice
                     getProducts()
                 } else {
-                    Log.e("ViewModel", "El repositorio devolvió false. No se pudo eliminar.")
                     _progresState.value = false
                 }
 
             } catch (e: Exception) {
-                Log.e("ViewModel", "Excepción al eliminar: ${e.message}")
                 _progresState.value = false
             }
-            // Nota: Si getProducts() se llama, él se encargará de poner _progresState en false al terminar.
         }
+    }
+
+
+    fun updateProduct(product: Product) {
+        viewModelScope.launch {
+            _progresState.value = true // Cargando...
+            try {
+                val success = inventoryRepository.updateProduct(product)
+                if (success) {
+
+                    getProducts()
+                    _editProductStatus.value = true
+                } else {
+                    _editProductStatus.value = false
+                }
+            } catch (e: Exception) {
+                _editProductStatus.value = false
+            } finally {
+                _progresState.value = false
+            }
+        }
+    }
+
+    // Función auxiliar para resetear el estado de edición (evita que se dispare solo)
+    fun resetEditStatus() {
+        _editProductStatus.value = false
     }
 
     fun totalProducto(price: Int, quantity: Int): Double {
