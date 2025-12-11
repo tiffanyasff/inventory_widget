@@ -11,10 +11,13 @@ class AddItemRepository {
 
     suspend fun saveProduct(product: Product): Boolean {
         return try {
+            // CORRECCIÓN: Usamos .add() en lugar de .document().set()
+            // .add() crea un ID único automático (ej: "Xy7z9...") para que no se sobrescriban.
+
             db.collection(collectionName)
-                .document(product.productCode.toString())
-                .set(product)
+                .add(product)
                 .await()
+
             true
         } catch (e: Exception) {
             e.printStackTrace()
