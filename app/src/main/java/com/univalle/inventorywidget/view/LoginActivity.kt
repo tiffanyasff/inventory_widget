@@ -3,28 +3,27 @@ package com.univalle.inventorywidget.view
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.univalle.inventorywidget.R
 import com.univalle.inventorywidget.databinding.ActivityLoginBinding
 import com.univalle.inventorywidget.model.UserRequest
 import com.univalle.inventorywidget.viewmodel.LoginViewModel
-import com.univalle.inventorywidget.viewmodel.LoginViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var sharedPreferences: SharedPreferences
 
-    private val loginViewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(applicationContext)
-    }
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

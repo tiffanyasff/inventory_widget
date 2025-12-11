@@ -12,19 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.univalle.inventorywidget.databinding.FragmentAddItemBinding
-import com.univalle.inventorywidget.repository.AddItemRepository
 import com.univalle.inventorywidget.viewmodel.AddItemViewModel
-import com.univalle.inventorywidget.viewmodel.AddItemViewModelFactory
 import com.univalle.inventorywidget.viewmodel.SaveState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AddItemFragment : Fragment() {
 
     private lateinit var binding: FragmentAddItemBinding
 
-    private val viewModel: AddItemViewModel by viewModels {
-        AddItemViewModelFactory(AddItemRepository())
-    }
+    private val viewModel: AddItemViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

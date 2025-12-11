@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.AddItemRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed class SaveState {
     object Idle : SaveState()
@@ -16,7 +18,10 @@ sealed class SaveState {
     data class Error(val message: String) : SaveState()
 }
 
-class AddItemViewModel(private val repository: AddItemRepository) : ViewModel() {
+@HiltViewModel
+class AddItemViewModel @Inject constructor(
+    private val repository: AddItemRepository
+) : ViewModel() {
 
     private val _saveState = MutableStateFlow<SaveState>(SaveState.Idle)
     val saveState: StateFlow<SaveState> = _saveState

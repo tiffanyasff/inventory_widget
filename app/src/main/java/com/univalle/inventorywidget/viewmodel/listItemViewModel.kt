@@ -1,18 +1,19 @@
 package com.univalle.inventorywidget.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.Product
 import com.univalle.inventorywidget.repository.InventoryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListItemViewModel(application: Application) : AndroidViewModel(application) {
-
-    // 1. Instanciamos el repositorio que SÍ funciona
-    private val repository = InventoryRepository(application)
+@HiltViewModel
+class ListItemViewModel @Inject constructor(
+    private val repository: InventoryRepository
+) : ViewModel() {
 
     private val _products = MutableLiveData<MutableList<Product>>()
     val products: LiveData<MutableList<Product>> = _products

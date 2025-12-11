@@ -3,10 +3,12 @@ package com.univalle.inventorywidget.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.univalle.inventorywidget.model.Product
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class AddItemRepository {
+class AddItemRepository @Inject constructor(
+    private val db: FirebaseFirestore
+) {
 
-    private val db = FirebaseFirestore.getInstance()
     private val collectionName = "Articulos"
 
     suspend fun saveProduct(product: Product): Boolean {

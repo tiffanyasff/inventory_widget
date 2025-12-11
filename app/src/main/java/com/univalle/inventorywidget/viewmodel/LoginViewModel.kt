@@ -7,9 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.univalle.inventorywidget.model.UserRequest
 import com.univalle.inventorywidget.model.UserResponse
 import com.univalle.inventorywidget.repository.LoginRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val repository: LoginRepository
+) : ViewModel() {
 
     private val _isRegister = MutableLiveData<UserResponse>()
     val isRegister: LiveData<UserResponse> = _isRegister
