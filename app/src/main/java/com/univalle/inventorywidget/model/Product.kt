@@ -3,8 +3,8 @@ package com.univalle.inventorywidget.model
 import com.google.gson.annotations.SerializedName
 
 data class Product(
-   val productCode:Int,
-   val name:String,
-   val price:Int,
-   val quantity:Int
+   var productCode: Int = 0,
+   var name: String = "",
+   var price: Int = 0,
+   var quantity: Int = 0
 )
