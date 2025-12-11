@@ -12,6 +12,13 @@ import androidx.navigation.fragment.findNavController
 import com.univalle.inventorywidget.databinding.FragmentItemEditBinding
 import com.univalle.inventorywidget.model.Inventory
 import com.univalle.inventorywidget.viewmodel.InventoryViewModel
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.univalle.inventorywidget.model.Product
+import com.univalle.inventorywidget.repository.AddItemRepository
+import kotlinx.coroutines.launch
+import com.univalle.inventorywidget.R
+
 
 class ItemEditFragment : Fragment() {
 
@@ -82,18 +89,46 @@ class ItemEditFragment : Fragment() {
 
     private fun actualizarProducto() {
         val name = binding.etName.text.toString().trim()
-        val price = binding.etPrice.text.toString().trim().toInt()   // ✔ Int
-        val quantity = binding.etQuantity.text.toString().trim().toInt() // ✔ Int
+        val price = binding.etPrice.text.toString().trim().toInt()
+        val quantity = binding.etQuantity.text.toString().trim().toInt()
 
+        // 1) Actualizamos el objeto Inventory (Room / lógica interna)
         val inventarioActualizado = Inventory(
-            id = receivedInventory.id,
+            id = receivedInventory.id,   // este id lo estamos usando como productCode en Firebase
             name = name,
-            price = price,         // ✔ Int esperado por Inventory
+            price = price,
             quantity = quantity
         )
 
+        // Opcional: si quieres seguir actualizando también la BD local (Room)
         viewModel.updateInventory(inventarioActualizado)
 
-        findNavController().popBackStack()
+        // 2) Convertimos a Product para Firebase
+        val product = Product(
+            productCode = inventarioActualizado.id,
+            name = inventarioActualizado.name,
+            price = inventarioActualizado.price,
+            quantity = inventarioActualizado.quantity
+        )
+
+        // 3) Usamos el mismo repositorio que para guardar: hace .set() en el doc => crea o ACTUALIZA
+        val repository = AddItemRepository()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val success = repository.saveProduct(product)
+
+            if (success) {
+                Toast.makeText(requireContext(), "Artículo actualizado", Toast.LENGTH_SHORT).show()
+                // Volvemos a la pantalla home solo cuando Firebase ya se actualizó
+                findNavController().popBackStack(R.id.homeInventoryFragment, false)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Error al actualizar el artículo en la base de datos",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
+
 }
